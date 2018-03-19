@@ -1,0 +1,218 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  EXCEPTION_IN_PAGE_ERROR (0xc0000006) at pc=0x6ccb2240, pid=7168, tid=5948
+#
+# JRE version: Java(TM) SE Runtime Environment (8.0_51-b16) (build 1.8.0_51-b16)
+# Java VM: Java HotSpot(TM) Client VM (25.51-b03 mixed mode, sharing windows-x86 )
+# Problematic frame:
+# V  [jvm.dll+0x52240]
+#
+# Failed to write core dump. Minidumps are not enabled by default on client versions of Windows
+#
+# If you would like to submit a bug report, please visit:
+#   http://bugreport.java.com/bugreport/crash.jsp
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x016ec400):  JavaThread "main" [_thread_in_vm, id=5948, stack(0x01810000,0x01860000)]
+
+siginfo: ExceptionCode=0xc0000006
+
+Registers:
+EAX=0x00000000, EBX=0x00000000, ECX=0x00000000, EDX=0x00000000
+ESP=0x0185eb80, EBP=0x0185ed54, ESI=0x0185ef54, EDI=0x016ec400
+EIP=0x6ccb2240, EFLAGS=0x00010246
+
+Top of Stack: (sp=0x0185eb80)
+0x0185eb80:   6cc98dc7 00000000 00000000 016ef9e8
+0x0185eb90:   015b0a10 016ec400 0185f568 7710a2c2
+0x0185eba0:   d141bbe2 fffffffe 770a9e17 504aa095
+0x0185ebb0:   000001a0 015f9368 000003f0 0185ebc4
+0x0185ebc0:   00000000 000003f0 0185ebe8 504e7543
+0x0185ebd0:   000001a0 00000000 015f9368 000003f0
+0x0185ebe0:   01bf5b11 00000000 0185ec00 504e75a7
+0x0185ebf0:   000001a0 00000000 000003f0 00000000 
+
+Instructions: (pc=0x6ccb2240)
+0x6ccb2220:   
+[error occurred during error reporting (printing registers, top of stack, instructions near pc), id 0xc0000006]
+
+Register to memory mapping:
+
+EAX=0x00000000 is an unknown value
+EBX=0x00000000 is an unknown value
+ECX=0x00000000 is an unknown value
+EDX=0x00000000 is an unknown value
+ESP=0x0185eb80 is pointing into the stack for thread: 0x016ec400
+EBP=0x0185ed54 is pointing into the stack for thread: 0x016ec400
+ESI=0x0185ef54 is pointing into the stack for thread: 0x016ec400
+EDI=0x016ec400 is a thread
+
+
+Stack: [0x01810000,0x01860000],  sp=0x0185eb80,  free space=314k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x52240]
+V  [jvm.dll+0x3ae46]
+V  [jvm.dll+0x4fcaf]
+V  [jvm.dll+0x5038a]
+V  [jvm.dll+0x515d0]
+V  [jvm.dll+0x5161a]
+V  [jvm.dll+0xab648]
+V  [jvm.dll+0x7f942]
+V  [jvm.dll+0x7fb27]
+j  java.lang.invoke.MethodHandleImpl.<clinit>()V+30
+v  ~StubRoutines::call_stub
+V  [jvm.dll+0x155dc5]
+V  [jvm.dll+0x21b31e]
+V  [jvm.dll+0x155e5e]
+V  [jvm.dll+0xbe89b]
+V  [jvm.dll+0xbfa47]
+V  [jvm.dll+0xbfb78]
+V  [jvm.dll+0x83d06]
+V  [jvm.dll+0x84d32]
+V  [jvm.dll+0x80347]
+j  java.lang.invoke.MethodHandle.<clinit>()V+16
+v  ~StubRoutines::call_stub
+V  [jvm.dll+0x155dc5]
+V  [jvm.dll+0x21b31e]
+V  [jvm.dll+0x155e5e]
+V  [jvm.dll+0xbe89b]
+V  [jvm.dll+0xbfa47]
+V  [jvm.dll+0xbfb78]
+V  [jvm.dll+0x1739ac]
+V  [jvm.dll+0xe5291]
+C  [java.exe+0x14c6]
+C  [java.exe+0x203a]
+C  [java.exe+0xae0f]
+C  [java.exe+0xae99]
+C  [kernel32.dll+0x4ef8c]
+C  [ntdll.dll+0x6367a]
+C  [ntdll.dll+0x6364d]
+C  0x00000000
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+j  java.lang.invoke.MethodHandleImpl.<clinit>()V+30
+v  ~StubRoutines::call_stub
+j  java.lang.invoke.MethodHandle.<clinit>()V+16
+v  ~StubRoutines::call_stub
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x015ec000 JavaThread "C1 CompilerThread0" daemon [_thread_blocked, id=6196, stack(0x14fe0000,0x15030000)]
+  0x015eb000 JavaThread "Attach Listener" daemon [_thread_blocked, id=5580, stack(0x14de0000,0x14e30000)]
+  0x015e8000 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=4812, stack(0x14720000,0x14770000)]
+  0x015da800 JavaThread "Finalizer" daemon [_thread_blocked, id=7628, stack(0x14e70000,0x14ec0000)]
+  0x015d5c00 JavaThread "Reference Handler" daemon [_thread_blocked, id=7832, stack(0x14d80000,0x14dd0000)]
+=>0x016ec400 JavaThread "main" [_thread_in_vm, id=5948, stack(0x01810000,0x01860000)]
+
+Other Threads:
+  0x015d4000 VMThread [stack: 0x14660000,0x146b0000] [id=5008]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap:
+ def new generation   total 4928K, used 442K [0x03c00000, 0x04150000, 0x09150000)
+  eden space 4416K,  10% used [0x03c00000, 0x03c6e838, 0x04050000)
+  from space 512K,   0% used [0x04050000, 0x04050000, 0x040d0000)
+  to   space 512K,   0% used [0x040d0000, 0x040d0000, 0x04150000)
+ tenured generation   total 10944K, used 0K [0x09150000, 0x09c00000, 0x13c00000)
+   the space 10944K,   0% used [0x09150000, 0x09150000, 0x09150200, 0x09c00000)
+ Metaspace       used 26K, capacity 2240K, committed 2240K, reserved 4480K
+
+Card table byte_map: [0x01770000,0x01800000] byte_map_base: 0x01752000
+
+Polling page: 0x01180000
+
+CodeCache: size=32768Kb used=634Kb max_used=634Kb free=32133Kb
+ bounds [0x01b90000, 0x01c30000, 0x03b90000]
+ total_blobs=132 nmethods=0 adapters=66
+ compilation: enabled
+
+Compilation events (0 events):
+No events
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (0 events):
+No events
+
+Internal exceptions (2 events):
+Event: 0.320 Thread 0x016ec400 Exception <a 'java/lang/NoSuchMethodError': Method sun.misc.Unsafe.defineClass(Ljava/lang/String;[BII)Ljava/lang/Class; name or signature does not match> (0x03c0c838) thrown at [C:\re\workspace\8-2-build-windows-i586-cygwin\jdk8u51\3951\hotspot\src\share\vܵAt˅�?
+Event: 0.321 Thread 0x016ec400 Exception <a 'java/lang/NoSuchMethodError': Method sun.misc.Unsafe.prefetchRead(Ljava/lang/Object;J)V name or signature does not match> (0x03c0cab8) thrown at [C:\re\workspace\8-2-build-windows-i586-cygwin\jdk8u51\3951\hotspot\src\share\vm\prims\jni.cpp, l
+
+Events (7 events):
+Event: 0.093 Thread 0x016ec400 Thread added: 0x016ec400
+Event: 0.203 Thread 0x015d5c00 Thread added: 0x015d5c00
+Event: 0.205 Thread 0x015da800 Thread added: 0x015da800
+Event: 0.688 Thread 0x015e8000 Thread added: 0x015e8000
+Event: 0.688 Thread 0x015eb000 Thread added: 0x015eb000
+Event: 0.688 Thread 0x015ec000 Thread added: 0x015ec000
+Event: 0.695 loading class java/lang/invoke/MethodHandleImpl$1
+
+
+Dynamic libraries:
+0x01200000 - 0x01233000 	C:\Program Files\Java\jdk1.8.0_51\jre\bin\java.exe
+0x77430000 - 0x77572000 	C:\Windows\SYSTEM32\ntdll.dll
+0x77060000 - 0x77135000 	C:\Windows\system32\kernel32.dll
+0x756b0000 - 0x756fb000 	C:\Windows\system32\KERNELBASE.dll
+0x76fb0000 - 0x77051000 	C:\Windows\system32\ADVAPI32.dll
+0x77380000 - 0x7742c000 	C:\Windows\system32\msvcrt.dll
+0x76a30000 - 0x76a49000 	C:\Windows\SYSTEM32\sechost.dll
+0x772b0000 - 0x77352000 	C:\Windows\system32\RPCRT4.dll
+0x771e0000 - 0x772a9000 	C:\Windows\system32\USER32.dll
+0x77580000 - 0x775ce000 	C:\Windows\system32\GDI32.dll
+0x76990000 - 0x7699a000 	C:\Windows\system32\LPK.dll
+0x77140000 - 0x771dd000 	C:\Windows\system32\USP10.dll
+0x73e60000 - 0x73ffe000 	C:\Windows\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_6.0.7601.18837_none_41e855142bd5705d\COMCTL32.dll
+0x76f50000 - 0x76fa7000 	C:\Windows\system32\SHLWAPI.dll
+0x77360000 - 0x7737f000 	C:\Windows\system32\IMM32.DLL
+0x75760000 - 0x7582d000 	C:\Windows\system32\MSCTF.dll
+0x77e50000 - 0x77f0f000 	C:\Program Files\Java\jdk1.8.0_51\jre\bin\msvcr100.dll
+0x6cc60000 - 0x6d020000 	C:\Program Files\Java\jdk1.8.0_51\jre\bin\client\jvm.dll
+0x69c90000 - 0x69c97000 	C:\Windows\system32\WSOCK32.dll
+0x76ab0000 - 0x76ae5000 	C:\Windows\system32\WS2_32.dll
+0x775d0000 - 0x775d6000 	C:\Windows\system32\NSI.dll
+0x73900000 - 0x73932000 	C:\Windows\system32\WINMM.dll
+0x74740000 - 0x74749000 	C:\Windows\system32\VERSION.dll
+0x767e0000 - 0x767e5000 	C:\Windows\system32\PSAPI.DLL
+0x51050000 - 0x5105c000 	C:\Program Files\Java\jdk1.8.0_51\jre\bin\verify.dll
+0x504a0000 - 0x504c1000 	C:\Program Files\Java\jdk1.8.0_51\jre\bin\java.dll
+0x504e0000 - 0x504f3000 	C:\Program Files\Java\jdk1.8.0_51\jre\bin\zip.dll
+0x75830000 - 0x7647b000 	C:\Windows\system32\SHELL32.dll
+0x76670000 - 0x767cd000 	C:\Windows\system32\ole32.dll
+0x75410000 - 0x7541b000 	C:\Windows\system32\profapi.dll
+0x72f70000 - 0x7305b000 	C:\Windows\system32\dbghelp.dll
+
+VM Arguments:
+java_command: org.jetbrains.git4idea.http.GitAskPassApp Username for 'https://github.com': 
+java_class_path (initial): C:/Program Files/Android/Android Studio/plugins/git4idea/lib/git4idea-rt.jar;C:/Program Files/Android/Android Studio/lib/xmlrpc-2.0.jar;C:/Program Files/Android/Android Studio/lib/commons-codec-1.9.jar;C:/Program Files/Android/Android Studio/lib/util.jar
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+JAVA_HOME=C:\Program Files\Java\jdk1.8.0_51
+PATH=C:\Users\User\AppData\Local\GitHub\PortableGit_f02737a78695063deace08e96d5042710d3e32db\mingw32/libexec/git-core;C:\Perl\site\bin;C:\Perl\bin;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\xampp\htdocs\demo\lib\Cake\Console;C:\xampphome\php;C:\ProgramData\ComposerSetup\bin;C:\Android\sdk\tools;C:\Android\sdk\platform-tools;C:\Program Files\MongoDB\Server\3.2\bin;C:\Program Files\Heroku\bin\heroku.exe;C:\xampphome\mysql\bin;C:\Program Files\Java\jdk1.8.0_131\jre\bin;C:\Program Files\OpenSSH\bin;C:\Program Files\Git\cmd;C:\Program Files\nodejs;C:\curl\src\curl.exe;C:\gradle-3.3\bin;C:\Users\User\AppData\Roaming\npm;C:\watchman\watchman.exe;C:\Users\User\AppData\Roaming\Composer\vendor\bin;C:\Program Files\MongoDB\Server\3.2\bin;C:\Program Files\Heroku\bin;C:\Program Files\Microsoft VS Code\bin;C:\xamppnew\mysql\bin;C:\Program Files\Java\jdk1.8.0_131\jre\bin;C:\Users\User\AppData\Roaming\npm;C:\curl\src;C:\Program Files\Microsoft VS Code Insiders\bin
+USERNAME=User
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=x86 Family 6 Model 23 Stepping 10, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows 7 Build 7601 (6.1.7601.23775)
+
+CPU:total 2 (2 cores per cpu, 1 threads per core) family 6 model 23 stepping 10, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, tsc
+
+Memory: 4k page, physical 3634296k(349576k free), swap 7266876k(2551728k free)
+
+vm_info: Java HotSpot(TM) Client VM (25.51-b03) for windows-x86 JRE (1.8.0_51-b16), built on Jun  8 2015 18:00:23 by "java_re" with MS VC++ 10.0 (VS2010)
+
+time: Fri Oct 13 09:56:27 2017
+elapsed time: 4 seconds (0d 0h 0m 4s)
+

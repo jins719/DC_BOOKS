@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+            <item android:gravity="center_vertical|center" android:id="@+id/stroke">
+            <shape xmlns:android="http://schemas.android.com/apk/res/android"
+                android:shape="oval" >
+                <corners android:radius="1dp" />
+                <stroke
+                    android:width="1dp"
+                    android:color="#ffffff" />
+                <!--<gradient-->
+                    <!--android:startColor="#16f7f7"-->
+                    <!--android:centerColor="#035559"-->
+                    <!--android:endColor="#7fd1cf"-->
+                    <!--android:angle="270" />-->
+                <solid
+                    android:color="#16f7f7"
+                    />
+                <size
+                    android:width="45dp"
+                    android:height="45dp" />
+            </shape>
+
+        </item>
+            <item
+                android:drawable="@mipmap/cu_mark"
+                android:gravity="center"
+                android:top="10dp" android:bottom="10dp"
+                android:right="10dp" android:left="10dp"
+                >
+
+            </item>
+</layer-list>

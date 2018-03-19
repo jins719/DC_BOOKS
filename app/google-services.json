@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "170634825114",
+    "firebase_url": "https://dc-books-e8281.firebaseio.com",
+    "project_id": "dc-books-e8281",
+    "storage_bucket": "dc-books-e8281.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170634825114:android:6864726107fedb1e",
+        "android_client_info": {
+          "package_name": "app.com.dc_books"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "170634825114-plqqq0qe9l7to2egdobu0168dsg2dfm2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.com.dc_books",
+            "certificate_hash": "6be3bcfa7d4676636e8dfdea0c6f0828a60a715a"
+          }
+        },
+        {
+          "client_id": "170634825114-0t7kf8jkva8mssrnud6udu19p1majgun.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC24BYlgVA9INIZhMPwbYgu7wDNaNr-Qko"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "170634825114-0t7kf8jkva8mssrnud6udu19p1majgun.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

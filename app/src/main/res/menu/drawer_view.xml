@@ -1,0 +1,63 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/grp1"
+     >
+        <item
+            android:id="@+id/nav_home"
+            android:title="Home"
+            />
+        </group>
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/grp13"
+        >
+        <item
+            android:id="@+id/shop_category"
+            android:title="Shop by Category" />
+    </group>
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/grp2"
+      >
+        <item
+            android:id="@+id/order"
+            android:title="Your Order" />
+        </group>
+     <group android:checkableBehavior="single"
+      android:id="@+id/grp3">
+        <item
+            android:id="@+id/wishlist"
+            android:title="Your Wishlist" />
+        </group>
+    <group android:checkableBehavior="single"
+        android:id="@+id/grp4"
+           >
+        <item
+            android:id="@+id/about"
+            android:title="About Us" />
+        </group>
+    <group android:checkableBehavior="single"
+       android:id="@+id/grp5">
+        <item
+            android:id="@+id/contactus"
+            android:title="Contact Us" />
+        </group>
+
+    <group android:checkableBehavior="single"
+       android:id="@+id/grp7">
+        <item
+            android:id="@+id/notification"
+            android:title="Notifications" />
+        </group>
+    <group android:checkableBehavior="single"
+       android:id="@+id/grp8">
+        <item
+            android:id="@+id/shipping_and_privacy"
+            android:title="Shipping and Privacy" />
+        </group>
+
+</menu>

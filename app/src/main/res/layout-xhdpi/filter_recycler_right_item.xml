@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_filter_recycler_item"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:gravity="center_vertical|left">
+
+    <CheckBox
+        android:id="@+id/cb_filterItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:text="Default" />
+
+    <CheckBox
+        android:id="@+id/cb_filterColorItem"
+        android:gravity="center_vertical|center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:background="@null"
+        android:button="@drawable/custom_checkbox"
+        android:layout_toRightOf="@id/cb_filterItem"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

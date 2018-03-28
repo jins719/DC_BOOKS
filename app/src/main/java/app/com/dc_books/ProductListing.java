@@ -64,11 +64,11 @@ public class ProductListing extends AppCompatActivity {
     SharedPreferences.Editor edit;
     public static final String mp = "";
     Toolbar toolbar;
-    String ip_head = "http://192.168.1.7:8080/dcbooks";
+    String ip_head = "http://192.168.1.18:8080/dcbooks";
     String product_url = ip_head+"/api/product/list_by_category";
-    String wishlist_add_url = ip_head+"admin/services/Appaddwishlist";
+    String wishlist_add_url ="http://192.168.1.18:8080/dcbooks/api/wishlist/add";
     String sort_url = ip_head+"admin/services/Appsearchsorting";
-    String wishlist_delete_url = ip_head+"admin/services/Appdeletewishlist";
+    String wishlist_delete_url ="http://192.168.1.18:8080/dcbooks/api/wishlist/remove";
 
     String search_url =ip_head+"admin/services/Apphomesearchlist";
     String filter_url =ip_head+"admin/services/Appfilterresult";
@@ -201,9 +201,11 @@ public class ProductListing extends AppCompatActivity {
         WishlistAddParams.put("user_id", user_id);
         WishlistAddParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
         WishlistAddParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+
         WishlistDeleteParams.put("user_id", user_id);
         WishlistDeleteParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
         WishlistDeleteParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+
         SortParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
         SortParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
         SortParams.put("category_id",cat_id);
@@ -501,7 +503,7 @@ public class ProductListing extends AppCompatActivity {
             holder.tvProdActualPric.setPaintFlags(holder.tvProdActualPric.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
             holder.tvProdOfferPric.setText("Rs. "+getDecimal(prodOfferPric));
             holder.tvProdOfferPric.setTypeface(custom_bold);
-            if(wishStatus.equals("1")){
+            if(wishStatus.equals("true")){
                 holder.ibLikeButton.setImageResource(R.mipmap.heartfill);
             }else {
                 holder.ibLikeButton.setImageResource(R.mipmap.heart);
@@ -586,7 +588,7 @@ public class ProductListing extends AppCompatActivity {
                             if(resultsArray.length()<1){
 
                                 new SweetAlertDialog(ProductListing.this, SweetAlertDialog.ERROR_TYPE)
-                                        .setTitleText("No products")
+                                        .setTitleText("No ping ")
                                         .setContentText("No products available in this category.")
                                         .show();
                             }else {
@@ -608,7 +610,7 @@ public class ProductListing extends AppCompatActivity {
                               //  String badge=resultsArray.getJSONObject(i).getString("badgename");
                                 ProductItems obj=new ProductItems(
                                         prodId,
-                                        "http://192.168.1.7:8080/dcbooks/"+mainImg,
+                                        "http://192.168.1.18:8080/dcbooks/"+mainImg,
                                         prodTitle,
                                         prodActPric,
                                         prodOffrPric,
@@ -1105,18 +1107,6 @@ public class ProductListing extends AppCompatActivity {
                                         .setTitleText("Removed")
                                         .setContentText(Message)
                                         .show();
-//                                et_login_email.getText().clear();
-//                                et_login_pass.getText().clear();
-
-//                                edit.putString("Username",jsonResponse.getString("name"));
-//                                edit.putString("User_id",jsonResponse.getString("userId"));
-//                                edit.putString("Login_Status","success");
-//                                edit.putString("Firsttime","YES");
-//                                edit.commit();
-//
-//                                Intent in=new Intent(ProductListing.this,MainActivity.class);
-//                                startActivity(in);
-//                                finish();
 
                             }
                             else

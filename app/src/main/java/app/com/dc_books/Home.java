@@ -48,11 +48,11 @@ public class Home extends Fragment {
 
 
     Typeface font,font2,font3;
-    String Banner_Url="http://192.168.1.7:8080/dcbooks/api/homescreen/show_slider";
-    String Category_Url="http://192.168.1.7:8080/dcbooks/api/homescreen/top_categories";
-    String Newlaunches_Url="http://192.168.1.7:8080/dcbooks/api/homescreen/new_releases";
-    String Topselling_Url="http://192.168.1.7:8080/dcbooks/api/homescreen/best_sellers";
-    Map<String, String> HomeParams = new HashMap<String, String>();
+    String Banner_Url="http://192.168.1.18:8080/dcbooks/api/homescreen/show_slider";
+    String Category_Url="http://192.168.1.18:8080/dcbooks/api/homescreen/top_categories";
+    String Newlaunches_Url="http://192.168.1.18:8080/dcbooks/api/homescreen/new_releases";
+    String Topselling_Url="http://192.168.1.18:8080/dcbooks/api/homescreen/best_sellers";
+    Map<String,String> HomeParams = new HashMap<String, String>();
 
     ArrayList<String> BannerID = new ArrayList<>();
     ArrayList<String> BannerImage = new ArrayList<>();
@@ -197,7 +197,7 @@ public class Home extends Fragment {
 
 
                                 BannerID.add(banner_id);
-                                BannerImage.add("http://192.168.1.7:8080/dcbooks/"+banner_image);
+                                BannerImage.add("http://192.168.1.18:8080/dcbooks/"+banner_image);
                                 BannerLink.add(banner_link);
                             }
                         } catch (JSONException e) {
@@ -305,7 +305,7 @@ public class Home extends Fragment {
 
                                 CategoryID.add(categoryid);
                                 CategoryName.add(categoryname);
-                                CategoryImage.add("http://192.168.1.7:8080/dcbooks/"+categoryimage);
+                                CategoryImage.add("http://192.168.1.18:8080/dcbooks/"+categoryimage);
 
                                 ItemData itemsData = new ItemData(CategoryID.get(i), CategoryName.get(i),CategoryImage.get(i));
                                 arraylist.add(itemsData);
@@ -469,7 +469,7 @@ public class Home extends Fragment {
 
                                 NewLaunchID.add(newlaunchid);
                                 NewLaunchName.add("");
-                                NewLaunchImage.add("http://192.168.1.7:8080/dcbooks/"+newlaunchimage);
+                                NewLaunchImage.add("http://192.168.1.18:8080/dcbooks/"+newlaunchimage);
                                 NewLaunchBadge.add("");
 
                                 ItemData1 itemsData = new ItemData1(NewLaunchID.get(i), NewLaunchName.get(i),NewLaunchImage.get(i),NewLaunchBadge.get(i));
@@ -640,7 +640,7 @@ public class Home extends Fragment {
 
                                 TopSellID.add(topsellid);
                                 TopSellName.add("");
-                                TopSellImage.add("http://192.168.1.7:8080/dcbooks/"+topsellimage);
+                                TopSellImage.add("http://192.168.1.18:8080/dcbooks/"+topsellimage);
                                 TopSellBadge.add("");
 
                                 ItemData2 itemsData = new ItemData2(TopSellID.get(i), TopSellName.get(i),TopSellImage.get(i),TopSellBadge.get(i));

@@ -72,10 +72,10 @@ public class LoginActivity extends AppCompatActivity {
     Toolbar toolbar;
     public static final String mp = "";
     int NETCONNECTION;
-    String ip_head = "http://192.168.1.7:8080/dcbooks/";
-    String login_url= "http://192.168.1.7:8080/dcbooks/api/user/login";
-    String register_url= "http://192.168.1.7:8080/dcbooks/api/user/register";
-    String forgot_password_url= ip_head+"admin/services/Appforgotpassword";
+    String ip_head = "http://192.168.1.18:8080/dcbooks/";
+    String login_url= "http://192.168.1.18:8080/dcbooks/api/user/login";
+    String register_url= "http://192.168.1.18:8080/dcbooks/api/user/register";
+    String forgot_password_url="http://192.168.1.18:8080/dcbooks/api/user/forgot_password";
     Map<String, String> LoginParams = new HashMap<>();
     Map<String, String> RegisterParams = new HashMap<>();
     Map<String, String> ForgotPassParams = new HashMap<>();
@@ -87,6 +87,9 @@ public class LoginActivity extends AppCompatActivity {
     CallbackManager callbackManager;
     ImageButton loginButton;
     String device_id="";
+
+    String appkey="aec2a0b15161ae445865b32bbefef972";
+    String appsecurity="928e6af859edef918313aac98d5d48ee";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,8 +159,8 @@ public class LoginActivity extends AppCompatActivity {
         }
 
 
-        ForgotPassParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-        ForgotPassParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+        ForgotPassParams.put("appkey", appkey);
+        ForgotPassParams.put("appsecurity",appsecurity);
         toolbar.setTitle("");
 
 
@@ -332,8 +335,8 @@ public class LoginActivity extends AppCompatActivity {
 
                     LoginParams.put("email", email);
                     LoginParams.put("password", psw);
-                    LoginParams.put("appkey",MainActivity.appkey);
-                    LoginParams.put("appsecurity",MainActivity.appsecurity);
+                    LoginParams.put("appkey",appkey);
+                    LoginParams.put("appsecurity",appsecurity);
                     LoginParams.put("deviceid", device_id);
                     LoginParams.put("devicetype", "Android");
                     LoginParams.put("applogintype", "DcbooksApp");
@@ -358,11 +361,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
-    public void fb_login(View v)
-    {
-//        FacebookRegister();
-        Toast.makeText(getApplicationContext(),"haaaaaaaaaaaaaaa",Toast.LENGTH_SHORT).show();
-    }
+
 
     private void updateUI( @Nullable GoogleSignInAccount account) {
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
@@ -775,6 +774,8 @@ public class LoginActivity extends AppCompatActivity {
                                 LoginParams.put("firstname", firstname);
                                 LoginParams.put("lastname", lastname);
 
+                                login_url= "http://192.168.1.18:8080/dcbooks/api/user/social_login";
+
 
                                 isNetworkConnected();
                                 if(NETCONNECTION==1)
@@ -822,17 +823,20 @@ public class LoginActivity extends AppCompatActivity {
             String firstname = acct.getDisplayName();
             String lastname = acct.getFamilyName();
             String uniqid = acct.getId();
-            System.out.println("dsjfkasjfda"+firstname+"    "+lastname+" "+uniqid);
+
+            LoginParams.put("appkey",MainActivity.appkey);
+            LoginParams.put("appsecurity",MainActivity.appsecurity);
             LoginParams.put("email",email );
-            LoginParams.put("email1",uniqid);
-            LoginParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-            LoginParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
-            LoginParams.put("deviceid", "00000");
-            LoginParams.put("devicetype", "0");
+            LoginParams.put("uniqueid",uniqid);
+            LoginParams.put("deviceid", device_id);
+            LoginParams.put("devicetype", "Android");
             LoginParams.put("firstname", firstname);
             LoginParams.put("lastname", lastname);
-            LoginParams.put("applogintype", "2");
-            login_url= ip_head+"admin/services/Appsociallogin";
+            LoginParams.put("applogintype", "Gmail");
+
+            login_url= "http://192.168.1.18:8080/dcbooks/api/user/social_login";
+
+
             isNetworkConnected();
             if(NETCONNECTION==1)
             {

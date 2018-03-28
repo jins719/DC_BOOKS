@@ -46,7 +46,6 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -72,15 +71,16 @@ public class Profile extends AppCompatActivity {
     String firstname,lastname,email,mobilenumber,gender_id,oldpasw,newpasw,confirmpasw;
     int NETCONNECTION;
 
-    String profiledetail_url="http://www.level10boutique.com/admin/services/Appprofilelist";
-    String profileupdate="http://www.level10boutique.com/admin/services/Appprofileedit";
-    String password_update_url="http://www.level10boutique.com/admin/services/Appchangepassword";
+    String profiledetail_url="http://192.168.1.18:8080/dcbooks/api/user/show_profile";
+    String profileupdate="http://192.168.1.18:8080/dcbooks/api/user/update_profile";
+    String password_update_url="http://192.168.1.18:8080/dcbooks/api/user/update_password";
 
     Map<String, String> ProfileDetailsParams = new HashMap<String, String>();
     Map<String, String> PasswordParams = new HashMap<String, String>();
 
-    String appkey="TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc";
-    String appsecurity="TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==";
+
+    String appkey="aec2a0b15161ae445865b32bbefef972";
+    String appsecurity="928e6af859edef918313aac98d5d48ee";
 
     SharedPreferences sp;
     SharedPreferences.Editor edit;
@@ -187,7 +187,7 @@ public class Profile extends AppCompatActivity {
             public void onClick(View view) {
 
                 Intent in=new Intent(Profile.this,Full_Image_View.class);
-                in.putExtra("path","http://www.level10boutique.com/"+image);
+                in.putExtra("path","http://192.168.1.18:8080/dcbooks"+image);
                 startActivity(in);
             }
         });
@@ -200,7 +200,7 @@ public class Profile extends AppCompatActivity {
         {
             ProfileDetailsParams.put("appkey",appkey);
             ProfileDetailsParams.put("appsecurity",appsecurity);
-            ProfileDetailsParams.put("id", userID);
+            ProfileDetailsParams.put("user_id", userID);
             Call_ProfileDetails();
         }else
         {
@@ -307,9 +307,10 @@ public class Profile extends AppCompatActivity {
             isNetworkConnected();
             if(NETCONNECTION==1)
             {
+
                 PasswordParams.put("appkey",appkey);
                 PasswordParams.put("appsecurity",appsecurity);
-                PasswordParams.put("userId", userID);
+                PasswordParams.put("user_id", userID);
                 PasswordParams.put("passphrase",oldpasw);
                 PasswordParams.put("password", newpasw);
                Call_passwordchange();
@@ -423,19 +424,15 @@ public class Profile extends AppCompatActivity {
 
                         try {
                             JSONObject jsonResponse = new JSONObject(String.valueOf(response));
-                            JSONArray jsonMain = jsonResponse.getJSONArray("userslist");
-                            int lengthJsonArr = jsonMain.length();
-                            for(int i=0; i < lengthJsonArr; i++) {
-                                JSONObject jsonChild = jsonMain.getJSONObject(i);
-                                String firstname = jsonChild.getString("firstname");
-                                String lastname = jsonChild.getString("lastname");
-                                String email = jsonChild.getString("email");
-                                String gender = jsonChild.getString("gender");
-                                String mobile = jsonChild.getString("mobile");
-                                image = jsonChild.getString("image");
-                                login_type=jsonChild.getString("applogintype");
 
-                                if(login_type.equals("S"))
+                                String firstname = jsonResponse.getString("firstname");
+                                String lastname = jsonResponse.getString("lastname");
+                                String email = jsonResponse.getString("email");
+                                String gender = jsonResponse.getString("gender");
+                                String mobile = jsonResponse.getString("mobile");
+                                image = jsonResponse.getString("profile_image");
+                                login_type=jsonResponse.getString("applogintype");
+                                if(login_type.equals("Gmail")||login_type.equals("Facebook"))
                                 {
                                     cardView.setVisibility(View.GONE);
                                     t_logout2.setVisibility(View.VISIBLE);
@@ -448,20 +445,16 @@ public class Profile extends AppCompatActivity {
                                 tile_email.setEnabled(false);
 
 
-
-
-
-                                    Picasso.with(Profile.this)
-                                            .load("http://www.level10boutique.com/"+image)
+                                Picasso.with(Profile.this)
+                                            .load("http://192.168.1.18:8080/dcbooks/"+image)
                                             .placeholder(R.mipmap.avtar)
                                             .error(R.mipmap.avtar)
                                             .transform(new CircleTransform())
                                             .into(img_dp);
 
-                                    edit.putString("UserImage","http://www.level10boutique.com/"+image);
+                                    edit.putString("UserImage","http://192.168.1.18:8080/dcbooks"+image);
                                     edit.commit();
 
-                                    System.out.println("image full path"+"http://www.level10boutique.com/"+image);
 
 
                                 tile_name.setText(firstname);
@@ -478,7 +471,7 @@ public class Profile extends AppCompatActivity {
                                     rb_male.setChecked(true);
                                 }
 
-                            }
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -486,9 +479,6 @@ public class Profile extends AppCompatActivity {
                         {
                             e.printStackTrace();
                         }
-
-
-
 
                         pDialog.dismiss();
 
@@ -542,7 +532,7 @@ public class Profile extends AppCompatActivity {
                 StringBody GenderID = new StringBody(gender_id);
                 entity.addPart("appkey",appkey_android);
                 entity.addPart("appsecurity",appsecurity_android);
-                entity.addPart("id", UserID);
+                entity.addPart("user_id", UserID);
                 entity.addPart("firstname", FirstName);
                 entity.addPart("lastname", LastName);
                 entity.addPart("email", Email);
@@ -552,6 +542,8 @@ public class Profile extends AppCompatActivity {
                 HttpResponse response=client.execute(postMethod);
                 responce = EntityUtils.toString(response.getEntity());
                 Log.v("log_tag", "Responce" + responce);
+
+
             }
             catch (Exception e) {
                 // TODO Auto-generated catch block
@@ -667,6 +659,8 @@ public class Profile extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+
+                pDialog.dismiss();
 
                 System.out.println("Error Responce---> "+error.toString());
 

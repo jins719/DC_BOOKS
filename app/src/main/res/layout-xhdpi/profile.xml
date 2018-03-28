@@ -274,6 +274,8 @@
                         android:layout_marginTop="10dp"
                         android:layout_marginLeft="15dp"
                         android:layout_marginRight="15dp"
+                        app:passwordToggleEnabled="true"
+                        app:passwordToggleTint="@color/colorAccent"
                         android:layout_below="@+id/textView38">
 
                         <android.support.design.widget.TextInputEditText
@@ -291,6 +293,8 @@
                         android:layout_below="@+id/TextInputLayout5"
                         android:layout_marginLeft="15dp"
                         android:layout_marginRight="15dp"
+                        app:passwordToggleEnabled="true"
+                        app:passwordToggleTint="@color/colorAccent"
                         android:id="@+id/TextInputLayout6">
 
                         <android.support.design.widget.TextInputEditText
@@ -308,6 +312,8 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginLeft="15dp"
                         android:layout_marginRight="15dp"
+                        app:passwordToggleEnabled="true"
+                        app:passwordToggleTint="@color/colorAccent"
                         android:layout_below="@+id/TextInputLayout6">
 
                         <android.support.design.widget.TextInputEditText

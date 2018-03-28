@@ -6,7 +6,11 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -48,9 +52,11 @@ import me.relex.circleindicator.CircleIndicator;
 
 public class ProductDetails extends AppCompatActivity {
 
-    String ProductDetails_Url="http://192.168.1.7:8080/dcbooks/api/product/details";
+    String ProductDetails_Url="http://192.168.1.18:8080/dcbooks/api/product/details";
+    String Reviewproduct_Url="http://192.168.1.18:8080/dcbooks/api/productreview/submit";
     String Mywishlist_Url;
     Map<String, String> ProductParams = new HashMap<String, String>();
+    Map<String, String> ProductReviewParams = new HashMap<String, String>();
     Map<String, String> WishParams = new HashMap<String, String>();
     String appkey="aec2a0b15161ae445865b32bbefef972";
     String appsecurity="928e6af859edef918313aac98d5d48ee";
@@ -83,15 +89,24 @@ public class ProductDetails extends AppCompatActivity {
     String userID,sellingprice,specialdiscount;
     ImageButton img_account;
 
-    RatingBar ratingBar;
+    RatingBar ratingBar,reviewrating;
     ImageButton add;
-    CardView cardView2;
+    CardView cardView2,writereview_cardview;
 
     String bookname,author,category,isbn,binding,publishingdate,publisher,edition,
-            numberofpages,language,stockavilable,delivery;
+            numberofpages,language,stockavilable,delivery,already_reviewed="false";
     
     TextView t_bookname,t_author,t_category,t_isbn,t_binding,t_publishingdate,t_publisher,t_edition,
-            t_numberofpages,t_language,t_stockavilable,t_delivery,t_authorby;
+            t_numberofpages,t_language,t_stockavilable,t_delivery,t_authorby,t_writereviewheading,
+            t_productnameheading,t_productnaemreview,t_yourrating;
+
+    TextView T_book,T_author,T_category,T_isbn,T_binding,T_Pubdate,T_pub,T_edition,T_nopages,T_language;
+
+    TextInputLayout ti_title,ti_message;
+    TextInputEditText te_title,te_message;
+
+    //Network status
+    int NETCONNECTION;
 
 
 
@@ -136,9 +151,32 @@ public class ProductDetails extends AppCompatActivity {
         t_stockavilable=findViewById(R.id.stockavilable);
         t_delivery=findViewById(R.id.delivery);
         t_authorby=findViewById(R.id.textView45);
-        
+        t_writereviewheading=findViewById(R.id.writereviewheading);
+        t_productnameheading=findViewById(R.id.productnameheading);
+        t_productnaemreview=findViewById(R.id.productnaemreview);
+        t_yourrating=findViewById(R.id.yourrating);
+
+        T_book=findViewById(R.id.T_book);
+        T_author=findViewById(R.id.T_author);
+        T_category=findViewById(R.id.T_category);
+        T_isbn=findViewById(R.id.T_isbn);
+        T_binding=findViewById(R.id.T_binding);
+        T_Pubdate=findViewById(R.id.T_Pubdate);
+        T_pub=findViewById(R.id.T_pub);
+        T_edition=findViewById(R.id.T_edition);
+        T_nopages=findViewById(R.id.T_nopages);
+        T_language=findViewById(R.id.T_language);
+
+        ti_title=findViewById(R.id.ti_title);
+        ti_message=findViewById(R.id.ti_message);
+        te_title=findViewById(R.id.te_title);
+        te_message=findViewById(R.id.te_message);
+
+        writereview_cardview=findViewById(R.id.writereview_cardview);
+
 
         ratingBar=findViewById(R.id.ratingbar);
+        reviewrating=findViewById(R.id.ratingbar2);
         viewPager=findViewById(R.id.viewPager);
         indicator =findViewById(R.id.indicator);
         rtv_searchlayout=findViewById(R.id.relativeLayout2);
@@ -150,7 +188,9 @@ public class ProductDetails extends AppCompatActivity {
         img_account=findViewById(R.id.account);
         cardView2=findViewById(R.id.cardview2);
         cardView2.setVisibility(View.INVISIBLE);
-       // et_search.setIconified(false);
+
+
+
         int searchIconId = et_search.getContext().getResources().getIdentifier("android:id/search_button",null, null);
         ImageView searchIcon = (ImageView) et_search.findViewById(searchIconId);
         searchIcon.setImageResource(R.mipmap.searchicon);
@@ -167,12 +207,48 @@ public class ProductDetails extends AppCompatActivity {
         }
 
 
-
+        // Font set all textview and edittext
         t_productname.setTypeface(font);
-        t_actualprice.setTypeface(font2);
-        t_sellingprice.setTypeface(font2);
-        t_heading_productdetails.setTypeface(font2);
-        t_price.setTypeface(font2);
+        t_productnaemreview.setTypeface(font);
+        t_productnameheading.setTypeface(font3);
+        t_actualprice.setTypeface(font3);
+        t_sellingprice.setTypeface(font3);
+        t_yourrating.setTypeface(font);
+        t_heading_productdetails.setTypeface(font3);
+        t_price.setTypeface(font3);
+        te_title.setTypeface(font);
+        te_message.setTypeface(font);
+
+        t_bookname.setTypeface(font);
+        t_author.setTypeface(font);
+        t_category.setTypeface(font);
+        t_isbn.setTypeface(font);
+        t_binding.setTypeface(font);
+        t_publishingdate.setTypeface(font);
+        t_publisher.setTypeface(font);
+        t_edition.setTypeface(font);
+        t_numberofpages.setTypeface(font);
+        t_language.setTypeface(font);
+        t_stockavilable.setTypeface(font);
+        t_delivery.setTypeface(font);
+        t_authorby.setTypeface(font);
+        t_writereviewheading.setTypeface(font);
+        t_productnameheading.setTypeface(font);
+        t_productnaemreview.setTypeface(font);
+        t_yourrating.setTypeface(font);
+
+        T_book.setTypeface(font3);
+        T_author.setTypeface(font3);
+        T_category.setTypeface(font3);
+        T_isbn.setTypeface(font3);
+        T_binding.setTypeface(font3);
+        T_Pubdate.setTypeface(font3);
+        T_pub.setTypeface(font3);
+        T_edition.setTypeface(font3);
+        T_nopages.setTypeface(font3);
+        T_language.setTypeface(font3);
+
+
 
 
         t_actualprice.setPaintFlags(t_actualprice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -184,6 +260,7 @@ public class ProductDetails extends AppCompatActivity {
         ProductParams.put("appsecurity",appsecurity);
         ProductParams.put("product_id",product_id);
         ProductParams.put("user_id", userID);
+
 
 
         CallProductDetails();
@@ -226,11 +303,11 @@ public class ProductDetails extends AppCompatActivity {
                 if(!userID.equals("")) {
 
                     if (WISHLIST_STATE == 0) {
-                        Mywishlist_Url = "http://www.level10boutique.com/admin/services/Appaddwishlist";
+                        Mywishlist_Url = "http://192.168.1.18:8080/dcbooks/api/wishlist/add";
                         ib_wishlist.setImageResource(R.mipmap.heartfill);
                         WISHLIST_STATE = 1;
                     } else {
-                        Mywishlist_Url = "http://www.level10boutique.com/admin/services/Appdeletewishlist";
+                        Mywishlist_Url = "http://192.168.1.18:8080/dcbooks/api/wishlist/remove";
                         ib_wishlist.setImageResource(R.mipmap.heart);
                         WISHLIST_STATE = 0;
                     }
@@ -250,6 +327,7 @@ public class ProductDetails extends AppCompatActivity {
         if(userID.equals(""))
         {
             img_account.setImageResource(R.mipmap.topiconaccount);
+
         }
         else
         {
@@ -272,6 +350,41 @@ public class ProductDetails extends AppCompatActivity {
             SearchlayoutVisibleState = 0;
 
 
+        }
+    }
+    public void Review(View v)
+    {
+        ti_title.setError(null);
+        ti_message.setError(null);
+
+        ProductReviewParams.clear();
+        ProductReviewParams.put("appkey",appkey);
+        ProductReviewParams.put("appsecurity",appsecurity);
+        ProductReviewParams.put("product_id",product_id);
+        ProductReviewParams.put("user_id", userID);
+        ProductReviewParams.put("title",te_title.getText().toString());
+        ProductReviewParams.put("message",te_message.getText().toString());
+        ProductReviewParams.put("rating",String.valueOf(reviewrating.getRating()));
+        isNetworkConnected();
+
+        if(te_title.getText().toString().equals(""))
+        {
+            ti_title.setError("Please enter convenient title");
+        }
+        else if(te_message.getText().toString().equals(""))
+        {
+            ti_message.setError("enter your feedback");
+        }
+        else if(NETCONNECTION==0)
+        {
+        new SweetAlertDialog(ProductDetails.this, SweetAlertDialog.ERROR_TYPE)
+                .setTitleText("No internet")
+                .setContentText("Internet not available, Cross check your internet connectivity and try again")
+                .show();
+        }
+        else
+        {
+            ReviewWebservice();
         }
     }
     public void Add(View v)
@@ -350,6 +463,7 @@ public class ProductDetails extends AppCompatActivity {
                                 stockavilable=jsonChild.getString("stock");
                                 delivery=jsonChild.getString("delivered_in");
                                 category=jsonChild.getString("category");
+                                already_reviewed=jsonChild.getString("reviewed_already");
                                 String rating=jsonChild.getString("average_rating");
                                 String wishlist=jsonChild.getString("wishlist");
                                 if(wishlist.equals("true"))
@@ -362,7 +476,6 @@ public class ProductDetails extends AppCompatActivity {
                                     ib_wishlist.setImageResource(R.mipmap.heart);
                                     WISHLIST_STATE=0;
                                 }
-
                                 t_bookname.setText(bookname);
                                 t_author.setText(author);
                                 t_category.setText(author);
@@ -377,20 +490,22 @@ public class ProductDetails extends AppCompatActivity {
                                 t_delivery.setText(delivery);
                                 t_authorby.setText("By : "+author);
                                 t_category.setText(category);
-
+                                t_productnaemreview.setText(bookname);
                                 ratingBar.setRating(Float.parseFloat(rating));
-                                
-
+                                //set enable set false
+                                ratingBar.setEnabled(false);
                                 DecimalFormat df = new DecimalFormat("#0.00");
                                 t_productname.setText(bookname);
                                 t_actualprice.setText(String.valueOf(df.format(Double.parseDouble(actualprice))));
                                 t_sellingprice.setText("Sale: Rs. "+String.valueOf(df.format(Double.parseDouble(sellingprice))));
-
-
-                                BannerImage.add("http://192.168.1.7:8080/dcbooks/"+image);
-
+                                BannerImage.add("http://192.168.1.18:8080/dcbooks/"+image);
                                 Glide.with(ProductDetails.this)
                                         .load(badgeimage).into(badgeview);
+                                //Already Reviewed
+                                if(already_reviewed.equals("true"))
+                                {
+                                    writereview_cardview.setVisibility(View.GONE);
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -407,7 +522,7 @@ public class ProductDetails extends AppCompatActivity {
                                 String image=jsonChild.getString("image");
                                 if(!image.equals(""))
                                 {
-                                    BannerImage.add("http://192.168.1.7:8080/dcbooks/"+image);
+                                    BannerImage.add("http://192.168.1.18:8080/dcbooks/"+image);
                                 }
                             }
                         } catch (JSONException e) {
@@ -492,6 +607,61 @@ public class ProductDetails extends AppCompatActivity {
                 "jobj_req");
     }
 
+    // Write Review Webservice Call
+    public void ReviewWebservice()
+    {
+        final SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Loading");
+        pDialog.setCancelable(true);
+        pDialog.show();
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                Reviewproduct_Url, new JSONObject(ProductReviewParams),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pDialog.dismiss();
+                        try {
+                            JSONObject jsonResponse = new JSONObject(String.valueOf(response));
+                            if(jsonResponse.getString("status").equals("true"))
+                            {
+                                new SweetAlertDialog(ProductDetails.this, SweetAlertDialog.SUCCESS_TYPE)
+                                        .setTitleText("Good job!")
+                                        .setContentText(response.getString("result"))
+                                        .show();
+
+                                    writereview_cardview.setVisibility(View.GONE);
+                            }
+                            else
+                            {
+                                new SweetAlertDialog(ProductDetails.this, SweetAlertDialog.ERROR_TYPE)
+                                        .setTitleText("Failed!")
+                                        .setContentText(response.getString("result"))
+                                        .show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+
+                        }
+                        catch (NullPointerException e)
+                        {
+                            e.printStackTrace();
+
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                pDialog.dismiss();
+                System.out.println("Error Responce---> "+error.toString());
+
+            }});
+        AppController.getInstance().addToRequestQueue(jsonObjReq,
+                "jobj_req");
+    }
+
+
     class CustomPagerAdapter extends PagerAdapter {
 
         Context mContext;
@@ -566,12 +736,38 @@ public class ProductDetails extends AppCompatActivity {
         if(userID.equals(""))
         {
             img_account.setImageResource(R.mipmap.topiconaccount);
+            writereview_cardview.setVisibility(View.GONE);
         }
         else
         {
             img_account.setImageResource(R.mipmap.topicon04);
+            if(already_reviewed.equals("true"))
+            {
+                writereview_cardview.setVisibility(View.GONE);
+            }
+            else
+            {
+                writereview_cardview.setVisibility(View.VISIBLE);
+            }
+
         }
 
+    }
+
+    //Check internet connection
+    private boolean isNetworkConnected()
+    {
+        ConnectivityManager cm =(ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        if (ni == null) {
+            NETCONNECTION=0;
+        }
+        else
+        {
+            NETCONNECTION=1;
+        }
+
+        return true;
     }
 
 }

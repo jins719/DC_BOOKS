@@ -57,10 +57,10 @@ public class AddAddress extends AppCompatActivity{
     int NETCONNECTION;
     Typeface font,font2,font3;
 
-    String state_url="http://www.level10boutique.com/admin/services/Appstates";
-    String country_url="http://www.level10boutique.com/admin/services/Appcountry";
+    String state_url="http://athira-pc:8080/dcbooks/api/user/show_states";
+    String country_url="http://athira-pc:8080/dcbooks/api/user/show_countries";
     String addaddress_url;
-    String address_url="http://www.level10boutique.com/admin/services/Appuseraddresseditlist";
+    String address_url="http://athira-pc:8080/dcbooks/api/user/add_address";
     Map<String, String> StateParams = new HashMap<String, String>();
     Map<String, String> DistrictParams = new HashMap<String, String>();
     Map<String, String> UserParams = new HashMap<String, String>();
@@ -202,8 +202,8 @@ public class AddAddress extends AppCompatActivity{
         else
         {
 
-            DistrictParams.put("appkey",appkey);
-            DistrictParams.put("appsecurity",appsecurity);
+            DistrictParams.put("appkey",MainActivity.appkey);
+            DistrictParams.put("appsecurity",MainActivity.appsecurity);
             Country_List();
 
 
@@ -226,8 +226,8 @@ public class AddAddress extends AppCompatActivity{
                 }
 
 
-                    StateParams.put("appkey",appkey);
-                    StateParams.put("appsecurity",appsecurity);
+                    StateParams.put("appkey",MainActivity.appkey);
+                    StateParams.put("appsecurity",MainActivity.appsecurity);
                     StateParams.put("countryId",selectedcountry);
 
                     State_List();
@@ -407,9 +407,9 @@ public class AddAddress extends AppCompatActivity{
         {
 
 
-                addaddress_url="http://www.level10boutique.com/admin/services/Appadduseraddress";
-                UserParams.put("appkey",appkey);
-                UserParams.put("appsecurity",appsecurity);
+                addaddress_url="http://athira-pc:8080/dcbooks/api/user/add_address";
+                UserParams.put("appkey",MainActivity.appkey);
+                UserParams.put("appsecurity",MainActivity.appsecurity);
                 UserParams.put("user_id",userID);
                 UserParams.put("state_id",selectedstate);
                 UserParams.put("country_id",selectedcountry);

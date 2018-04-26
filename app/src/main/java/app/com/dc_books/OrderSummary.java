@@ -53,10 +53,10 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class OrderSummary extends AppCompatActivity {
 
     Typeface font,font2,font3;
-    String addresslist_url="http://www.level10boutique.com/admin/services/Appuseraddresslist";
-    String orderitems_url="http://www.level10boutique.com/admin/services/Appordersummarylist";
-    String addressdelete_url="http://www.level10boutique.com/admin/services/Appuseraddressdelete";
-    String deliverycharge_url="http://www.level10boutique.com/admin/services/Appdelivercharge";
+    String addresslist_url="http://athira-pc:8080/dcbooks/api/user/address_list";
+    String orderitems_url="http://athira-pc:8080/dcbooks/api/order/order_summary_list";
+    String addressdelete_url="http://athira-pc:8080/dcbooks/api/user/delete_address";
+    String deliverycharge_url="http://athira-pc:8080/dcbooks/api/productshopping/delivery_charge";
 
     Map<String, String> AddressParams = new HashMap<String, String>();
     Map<String, String> OrderParams = new HashMap<String, String>();
@@ -85,7 +85,7 @@ public class OrderSummary extends AppCompatActivity {
     ArrayList<String>OrderItemName=new ArrayList<>();
     ArrayList<String>OrderQty=new ArrayList<>();
     ArrayList<String>OrderItemImages=new ArrayList<>();
-    ArrayList<String>OrderItemSize=new ArrayList<>();
+    ArrayList<String>OrderItemPrice=new ArrayList<>();
     
     RecyclerView rlv_addresslist,rlv_orderitems;
     MyAdapter mAdapter;
@@ -159,39 +159,6 @@ public class OrderSummary extends AppCompatActivity {
         cardView2=findViewById(R.id.cardview3);
         cardView2.setVisibility(View.VISIBLE);
 
-       /* if (scroller != null) {
-
-            scroller.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-                @Override
-                public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-
-                    if (scrollY > oldScrollY) {
-                        Log.i("", "Scroll DOWN");
-                        cardView2.setVisibility(View.GONE);
-                    }
-                    if (scrollY < oldScrollY) {
-                        Log.i("", "Scroll UP");
-                        cardView2.setVisibility(View.GONE);
-                    }
-
-                    if (scrollY == 0) {
-                        Log.i("", "TOP SCROLL");
-                        cardView2.setVisibility(View.VISIBLE);
-
-
-                    }
-
-                    if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
-                       // cardView2.setVisibility(View.GONE);
-
-                    }
-                }
-            });
-        }*/
-
-
-        //Back button set in toolbar
-
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -209,8 +176,8 @@ public class OrderSummary extends AppCompatActivity {
         String android_id = Settings.Secure.getString(this.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
 
-        OrderParams.put("appkey",appkey);
-        OrderParams.put("appsecurity",appsecurity);
+        OrderParams.put("appkey",MainActivity.appkey);
+        OrderParams.put("appsecurity",MainActivity.appsecurity);
         OrderParams.put("uniquedevice",android_id);
         OrderParams.put("user_id",userID);
         OrderParams.put("subtotalproduct",getIntent().getExtras().getString("subtotal"));
@@ -260,7 +227,6 @@ public class OrderSummary extends AppCompatActivity {
                             for(int i=0; i < lengthJsonArr; i++) {
 
                                 JSONObject jsonChild = jsonMain.getJSONObject(i);
-
                                 String firstname=jsonChild.getString("firstname");
                                 String address=jsonChild.getString("totaladdress");
                                 AddressID.add(jsonChild.getString("id"));
@@ -305,20 +271,20 @@ public class OrderSummary extends AppCompatActivity {
     public class ItemData {
 
         String address_id,name,address;
-        String order_id,orderitem_name,order_qty,orderitem_image,orderitem_size;
+        String order_id,orderitem_name,order_qty,orderitem_image,orderitem_price;
         public ItemData(String AddressID,String Name,String Address){
 
             this.address_id = AddressID;
             this.name = Name;
             this.address = Address;
         }
-        public ItemData(String OrderID,String OrderItemName,String OrderQty,String OrderImage,String OrderitemSize){
+        public ItemData(String OrderID,String OrderItemName,String OrderQty,String OrderImage,String OrderitemPrice){
 
             this.order_id = OrderID;
             this.orderitem_name = OrderItemName;
             this.order_qty = OrderQty;
             this.orderitem_image = OrderImage;
-            this.orderitem_size=OrderitemSize;
+            this.orderitem_price=OrderitemPrice;
         }
 
 
@@ -352,9 +318,9 @@ public class OrderSummary extends AppCompatActivity {
         {
             return this.orderitem_image;
         }
-        public String getorderitem_size()
+        public String getorderitem_price()
         {
-            return this.orderitem_size;
+            return this.orderitem_price;
         }
     }
 
@@ -471,8 +437,8 @@ public class OrderSummary extends AppCompatActivity {
                             mAdapter = new MyAdapter(OrderSummary.this, arraylist);
                             rlv_addresslist.setAdapter(mAdapter);
 
-                            DeliveryParams.put("appkey",appkey);
-                            DeliveryParams.put("appsecurity",appsecurity);
+                            DeliveryParams.put("appkey",MainActivity.appkey);
+                            DeliveryParams.put("appsecurity",MainActivity.appsecurity);
                             DeliveryParams.put("id",selectaddressid);
                             DeliveryParams.put("totalproductweight",getIntent().getExtras().getString("Weight"));
 
@@ -511,8 +477,8 @@ public class OrderSummary extends AppCompatActivity {
 
             remove_position=position;
 
-            AddresDeleteParams.put("appkey",appkey);
-            AddresDeleteParams.put("appsecurity",appsecurity);
+            AddresDeleteParams.put("appkey",MainActivity.appkey);
+            AddresDeleteParams.put("appsecurity",MainActivity.appsecurity);
             AddresDeleteParams.put("id",ID);
             Removeaddres();
         }
@@ -532,8 +498,10 @@ public class OrderSummary extends AppCompatActivity {
         OrderItemName.clear();
         OrderQty.clear();
         OrderItemImages.clear();
-        OrderItemSize.clear();
+        OrderItemPrice.clear();
         arraylist2.clear();
+
+        System.out.println("json"+new JSONObject(OrderParams));
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 orderitems_url, new JSONObject(OrderParams),
@@ -541,7 +509,7 @@ public class OrderSummary extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         System.out.println("Responce"+response.toString());
-                        System.out.println("json"+new JSONObject(OrderParams));
+
                         pDialog.dismiss();
 
                         try {
@@ -555,8 +523,8 @@ public class OrderSummary extends AppCompatActivity {
                                 OrderID.add(jsonChild.getString("id"));
                                 OrderItemName.add(jsonChild.getString("title"));
                                 OrderQty.add(jsonChild.getString("productquantity"));
-                                OrderItemSize.add(jsonChild.getString("productsize"));
-                                OrderItemImages.add("http://www.level10boutique.com/"+jsonChild.getString("image"));
+                                OrderItemPrice.add(jsonChild.getString("orginalsellingprice"));
+                                OrderItemImages.add("http://athira-pc:8080/dcbooks/"+jsonChild.getString("image"));
 
 
                                 DecimalFormat df = new DecimalFormat("#0.00");
@@ -565,7 +533,7 @@ public class OrderSummary extends AppCompatActivity {
                                 t_subtotalvalue.setText(String.valueOf(df.format(Double.parseDouble(jsonChild.getString("subtotalproduct")))));
 
 
-                                ItemData itemsData = new ItemData(OrderID.get(i), OrderItemName.get(i),OrderQty.get(i),OrderItemImages.get(i),OrderItemSize.get(i));
+                                ItemData itemsData = new ItemData(OrderID.get(i), OrderItemName.get(i),OrderQty.get(i),OrderItemImages.get(i),OrderItemPrice.get(i));
                                 arraylist2.add(itemsData);
 
 
@@ -627,7 +595,7 @@ public class OrderSummary extends AppCompatActivity {
             viewHolder.t_itemname.setText(OrderItemList.get(position).getorderitem_name());
             viewHolder.t_qty.setText(OrderItemList.get(position).getorder_qty());
 
-            viewHolder.t_size.setText(OrderItemList.get(position).getorderitem_size());
+            viewHolder.t_size.setText(OrderItemList.get(position).getorderitem_price());
 
             Glide.with(OrderSummary.this)
                     .load(OrderItemList.get(position).getorderitem_image()).into(viewHolder.img_itemimage);
@@ -764,7 +732,7 @@ public class OrderSummary extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-               // pDialog.dismiss();
+                pDialog.dismiss();
                 System.out.println("Error Responce---> "+error.toString());
 
             }
@@ -838,8 +806,8 @@ public class OrderSummary extends AppCompatActivity {
         isNetworkConnected();
         if(NETCONNECTION==1)
         {
-            AddressParams.put("appkey",appkey);
-            AddressParams.put("appsecurity",appsecurity);
+            AddressParams.put("appkey",MainActivity.appkey);
+            AddressParams.put("appsecurity",MainActivity.appsecurity);
             AddressParams.put("user_id",userID);
             Call_AddresList();
 

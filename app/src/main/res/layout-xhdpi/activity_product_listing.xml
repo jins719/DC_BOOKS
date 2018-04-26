@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="app.com.dc_books.ProductListing"
+    tools:context="app.com.level_10.ProductListing"
     android:background="#fff"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -27,7 +28,6 @@
                     android:layout_height="56dp"
                     android:layout_weight="1"
                     android:background="#fff"
-                    android:elevation="5dp"
                     android:theme="@style/ThemeOverlay.AppCompat.Light"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -122,7 +122,16 @@
 
                 </RelativeLayout>
 
-
+                <RelativeLayout
+                    android:id="@+id/divider"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/toolbar"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:background="#f2f2f2">
+                </RelativeLayout>
 
                 <RelativeLayout
                     android:id="@+id/rl_sec_toolbar"
@@ -132,7 +141,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:layout_below="@id/relativeLayout2"
+                    android:layout_below="@id/divider"
                     android:background="#fff">
 
                     <LinearLayout
@@ -144,7 +153,6 @@
                         android:layout_toLeftOf="@+id/ib_sort"
                         android:layout_toStartOf="@+id/ib_sort"
                         android:background="#d2d2d2"
-                        android:visibility="gone"
                         android:orientation="vertical" />
 
                     <ImageButton
@@ -157,7 +165,6 @@
                         android:layout_toLeftOf="@+id/divider_filter_left"
                         android:layout_toStartOf="@+id/divider_filter_left"
                         android:background="#fff"
-                        android:visibility="gone"
                         android:src="@mipmap/topsorticon" />
 
                     <LinearLayout
@@ -170,7 +177,6 @@
                         android:layout_toLeftOf="@+id/ib_filter"
                         android:layout_toStartOf="@+id/ib_filter"
                         android:background="#d2d2d2"
-                        android:visibility="gone"
                         android:orientation="vertical" />
 
                     <ImageButton
@@ -184,19 +190,20 @@
                         android:layout_marginRight="15dp"
                         android:background="#fff"
                         android:onClick="filter"
-                        android:visibility="gone"
                         android:src="@mipmap/topfiltericon" />
 
                     <TextView
                         android:id="@+id/tv_product_count"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true"
-                        android:gravity="center_vertical|start"
-                        android:text=""
-                        android:textColor="#555555"
-                        android:textSize="16sp"/>
+                        android:textColor="#000"
+                        android:textSize="16sp"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="center_vertical|start" />
 
                 </RelativeLayout>
 
@@ -243,8 +250,7 @@
 
              <RelativeLayout
                  android:layout_width="match_parent"
-                 android:layout_height="match_parent"
-                 android:visibility="gone">
+                 android:layout_height="match_parent">
 
                  <TextView
                      android:id="@+id/textView30"

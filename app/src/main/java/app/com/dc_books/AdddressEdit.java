@@ -53,10 +53,10 @@ public class AdddressEdit extends AppCompatActivity {
     int NETCONNECTION;
     Typeface font,font2,font3;
 
-    String state_url="http://www.level10boutique.com/admin/services/Appstates";
-    String country_url="http://www.level10boutique.com/admin/services/Appcountry";
+    String state_url="http://athira-pc:8080/dcbooks/api/user/show_states";
+    String country_url="http://athira-pc:8080/dcbooks/api/user/show_countries";
     String addaddress_url;
-    String address_url="http://www.level10boutique.com/admin/services/Appuseraddresseditlist";
+    String address_url="http://athira-pc:8080/dcbooks/api/user/address_edit_list";
     Map<String, String> StateParams = new HashMap<String, String>();
     Map<String, String> DistrictParams = new HashMap<String, String>();
     Map<String, String> UserParams = new HashMap<String, String>();
@@ -201,8 +201,8 @@ public class AdddressEdit extends AppCompatActivity {
         }
         else
         {
-            AddressParams.put("appkey",appkey);
-            AddressParams.put("appsecurity",appsecurity);
+            AddressParams.put("appkey",MainActivity.appkey);
+            AddressParams.put("appsecurity",MainActivity.appsecurity);
             AddressParams.put("id",getIntent().getExtras().getString("AddressID"));
             Call_Address();
 
@@ -226,8 +226,8 @@ public class AdddressEdit extends AppCompatActivity {
 
 
 
-                StateParams.put("appkey",appkey);
-                StateParams.put("appsecurity",appsecurity);
+                StateParams.put("appkey",MainActivity.appkey);
+                StateParams.put("appsecurity",MainActivity.appsecurity);
                 StateParams.put("countryId",selectedcountry);
                 State_List();
 
@@ -336,10 +336,10 @@ public class AdddressEdit extends AppCompatActivity {
         else
         {
 
-                addaddress_url="http://www.level10boutique.com/admin/services/Appuseraddressedit";
+                addaddress_url="http://athira-pc:8080/dcbooks/api/user/edit_address";
                 UserParams.clear();
-                UserParams.put("appkey",appkey);
-                UserParams.put("appsecurity",appsecurity);
+                UserParams.put("appkey",MainActivity.appkey);
+                UserParams.put("appsecurity",MainActivity.appsecurity);
                 UserParams.put("id",getIntent().getExtras().getString("AddressID"));
                 UserParams.put("user_id",userID);
                 UserParams.put("state_id",selectedstate);
@@ -630,8 +630,8 @@ public class AdddressEdit extends AppCompatActivity {
 
 
 
-                                DistrictParams.put("appkey",appkey);
-                                DistrictParams.put("appsecurity",appsecurity);
+                                DistrictParams.put("appkey",MainActivity.appkey);
+                                DistrictParams.put("appsecurity",MainActivity.appsecurity);
                                 Country_List();
 
 

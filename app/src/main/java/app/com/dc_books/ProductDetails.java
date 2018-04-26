@@ -21,9 +21,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -33,6 +33,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
+import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,8 +53,8 @@ import me.relex.circleindicator.CircleIndicator;
 
 public class ProductDetails extends AppCompatActivity {
 
-    String ProductDetails_Url="http://192.168.1.18:8080/dcbooks/api/product/details";
-    String Reviewproduct_Url="http://192.168.1.18:8080/dcbooks/api/productreview/submit";
+    String ProductDetails_Url="http://athira-pc:8080/dcbooks/api/product/details";
+    String Reviewproduct_Url="http://athira-pc:8080/dcbooks/api/productreview/submit";
     String Mywishlist_Url;
     Map<String, String> ProductParams = new HashMap<String, String>();
     Map<String, String> ProductReviewParams = new HashMap<String, String>();
@@ -89,7 +90,7 @@ public class ProductDetails extends AppCompatActivity {
     String userID,sellingprice,specialdiscount;
     ImageButton img_account;
 
-    RatingBar ratingBar,reviewrating;
+    SimpleRatingBar ratingBar,reviewrating;
     ImageButton add;
     CardView cardView2,writereview_cardview;
 
@@ -107,6 +108,10 @@ public class ProductDetails extends AppCompatActivity {
 
     //Network status
     int NETCONNECTION;
+
+    Button b_ebook,b_audiobook,b_paperback,b_usedbooks,b_hardcover;
+
+    String paperbackid,usedbookid,hardcoverid;
 
 
 
@@ -171,6 +176,14 @@ public class ProductDetails extends AppCompatActivity {
         ti_message=findViewById(R.id.ti_message);
         te_title=findViewById(R.id.te_title);
         te_message=findViewById(R.id.te_message);
+
+        b_ebook=findViewById(R.id.ebook);
+        b_audiobook=findViewById(R.id.audiobook);
+        b_paperback=findViewById(R.id.paperback);
+        b_usedbooks=findViewById(R.id.usedbook);
+        b_hardcover=findViewById(R.id.hardcover);
+
+
 
         writereview_cardview=findViewById(R.id.writereview_cardview);
 
@@ -248,6 +261,14 @@ public class ProductDetails extends AppCompatActivity {
         T_nopages.setTypeface(font3);
         T_language.setTypeface(font3);
 
+        b_ebook.setTypeface(font3);
+        b_audiobook.setTypeface(font3);
+        b_paperback.setTypeface(font3);
+        b_usedbooks.setTypeface(font3);
+        b_hardcover.setTypeface(font3);
+
+
+
 
 
 
@@ -260,6 +281,8 @@ public class ProductDetails extends AppCompatActivity {
         ProductParams.put("appsecurity",appsecurity);
         ProductParams.put("product_id",product_id);
         ProductParams.put("user_id", userID);
+        ProductParams.put("is_used_book", "0");
+
 
 
 
@@ -303,11 +326,11 @@ public class ProductDetails extends AppCompatActivity {
                 if(!userID.equals("")) {
 
                     if (WISHLIST_STATE == 0) {
-                        Mywishlist_Url = "http://192.168.1.18:8080/dcbooks/api/wishlist/add";
+                        Mywishlist_Url = "http://athira-pc:8080/dcbooks/api/wishlist/add";
                         ib_wishlist.setImageResource(R.mipmap.heartfill);
                         WISHLIST_STATE = 1;
                     } else {
-                        Mywishlist_Url = "http://192.168.1.18:8080/dcbooks/api/wishlist/remove";
+                        Mywishlist_Url = "http://athira-pc:8080/dcbooks/api/wishlist/remove";
                         ib_wishlist.setImageResource(R.mipmap.heart);
                         WISHLIST_STATE = 0;
                     }
@@ -323,6 +346,48 @@ public class ProductDetails extends AppCompatActivity {
             }
 
         });
+
+        b_paperback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                ProductParams.put("is_used_book", "0");
+                ProductParams.put("product_id",paperbackid);
+                b_paperback.setBackgroundResource(R.drawable.coveringlayout_selection);
+                b_usedbooks.setBackgroundResource(R.drawable.coveringlayout_background);
+                b_hardcover.setBackgroundResource(R.drawable.coveringlayout_background);
+
+                CallProductDetails();
+            }
+        });
+
+        b_usedbooks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                ProductParams.put("is_used_book", "1");
+                ProductParams.put("product_id",usedbookid);
+                b_paperback.setBackgroundResource(R.drawable.coveringlayout_background);
+                b_usedbooks.setBackgroundResource(R.drawable.coveringlayout_selection);
+                b_hardcover.setBackgroundResource(R.drawable.coveringlayout_background);
+
+                CallProductDetails();
+            }
+        });
+
+        b_hardcover.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                ProductParams.put("is_used_book", "0");
+                ProductParams.put("product_id",hardcoverid);
+                b_paperback.setBackgroundResource(R.drawable.coveringlayout_background);
+                b_usedbooks.setBackgroundResource(R.drawable.coveringlayout_background);
+                b_hardcover.setBackgroundResource(R.drawable.coveringlayout_selection);
+                CallProductDetails();
+            }
+        });
+
 
         if(userID.equals(""))
         {
@@ -429,6 +494,8 @@ public class ProductDetails extends AppCompatActivity {
         pDialog.setCancelable(true);
         pDialog.show();
 
+        System.out.println("json "+new JSONObject(ProductParams));
+
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 ProductDetails_Url, new JSONObject(ProductParams),
                 new Response.Listener<JSONObject>() {
@@ -466,6 +533,7 @@ public class ProductDetails extends AppCompatActivity {
                                 already_reviewed=jsonChild.getString("reviewed_already");
                                 String rating=jsonChild.getString("average_rating");
                                 String wishlist=jsonChild.getString("wishlist");
+                                String stock_status=jsonChild.getString("stock_status");
                                 if(wishlist.equals("true"))
                                 {
                                     ib_wishlist.setImageResource(R.mipmap.heartfill);
@@ -476,6 +544,17 @@ public class ProductDetails extends AppCompatActivity {
                                     ib_wishlist.setImageResource(R.mipmap.heart);
                                     WISHLIST_STATE=0;
                                 }
+                                if(stock_status.equals("0"))
+                                {
+                                    add.setEnabled(false);
+                                    add.getBackground().setAlpha(40);
+                                }
+                                else
+                                {
+                                    add.setEnabled(true);
+                                    add.getBackground().setAlpha(255);
+                                }
+
                                 t_bookname.setText(bookname);
                                 t_author.setText(author);
                                 t_category.setText(author);
@@ -493,12 +572,12 @@ public class ProductDetails extends AppCompatActivity {
                                 t_productnaemreview.setText(bookname);
                                 ratingBar.setRating(Float.parseFloat(rating));
                                 //set enable set false
-                                ratingBar.setEnabled(false);
+                                ratingBar.setIndicator(true);
                                 DecimalFormat df = new DecimalFormat("#0.00");
                                 t_productname.setText(bookname);
                                 t_actualprice.setText(String.valueOf(df.format(Double.parseDouble(actualprice))));
                                 t_sellingprice.setText("Sale: Rs. "+String.valueOf(df.format(Double.parseDouble(sellingprice))));
-                                BannerImage.add("http://192.168.1.18:8080/dcbooks/"+image);
+                                BannerImage.add("http://athira-pc:8080/dcbooks/"+image);
                                 Glide.with(ProductDetails.this)
                                         .load(badgeimage).into(badgeview);
                                 //Already Reviewed
@@ -522,13 +601,82 @@ public class ProductDetails extends AppCompatActivity {
                                 String image=jsonChild.getString("image");
                                 if(!image.equals(""))
                                 {
-                                    BannerImage.add("http://192.168.1.18:8080/dcbooks/"+image);
+                                    BannerImage.add("http://athira-pc:8080/dcbooks/"+image);
                                 }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
 
                         }
+
+
+                        try {
+                            JSONObject jsonResponse = new JSONObject(String.valueOf(response));
+                            JSONArray jsonMain = jsonResponse.getJSONArray("book_alternatives");
+                            int lengthJsonArr = jsonMain.length();
+                            for(int i=0; i < lengthJsonArr; i++) {
+                                JSONObject jsonChild = jsonMain.getJSONObject(i);
+                                String paperback=jsonChild.getString("paperback_available");
+                                String paperbacksellingprice=jsonChild.getString("paperback_selling_price");
+                                String hardcover_available=jsonChild.getString("hardcover_available");
+                                String hardcover_selling_price=jsonChild.getString("hardcover_selling_price");
+                                String usedbook_available=jsonChild.getString("usedbook_available");
+                                String usedbook_selling_price=jsonChild.getString("usedbook_selling_price");
+
+                                paperbackid=jsonChild.getString("paperback_id");
+                                usedbookid=jsonChild.getString("usedbook_id");
+                                hardcoverid=jsonChild.getString("hardcover_id");
+
+                                b_paperback.setText("PAPER BACK\n"+paperbacksellingprice);
+                                b_usedbooks.setText("USED BOOKS\n"+usedbook_selling_price);
+                                b_hardcover.setText("HARD COVER\n"+hardcover_selling_price);
+
+                                //Paperback default selection
+                                if(paperback.equals("true"))
+                                {
+                                    ProductParams.put("is_used_book", "false");
+                                    // default selection background color set on paperback button
+                                    b_paperback.setBackgroundResource(R.drawable.coveringlayout_selection);
+                                }
+                                else
+                                {
+                                    b_paperback.setEnabled(false);
+                                }
+                                //Used books default selection
+                                if(usedbook_available.equals("true"))
+                                {
+                                    if(hardcover_available.equals("false") && paperback.equals("false"))
+                                    {
+                                        ProductParams.put("is_used_book", "true");
+                                        b_usedbooks.setBackgroundResource(R.drawable.coveringlayout_selection);
+                                    }
+                                }
+                                else
+                                {
+                                    b_usedbooks.setEnabled(false);
+                                }
+                                //hard covering default selection
+                                if(hardcover_available.equals("true"))
+                                {
+                                    if(paperback.equals("false") && usedbook_available.equals("false"))
+                                    {
+                                        ProductParams.put("is_used_book", "false");
+                                        b_hardcover.setBackgroundResource(R.drawable.coveringlayout_selection);
+                                    }
+                                }
+                                else
+                                {
+                                    b_hardcover.setEnabled(false);
+                                }
+
+
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+
+                        }
+
 
                         CustomPagerAdapter mCustomPagerAdapter = new CustomPagerAdapter(ProductDetails.this,BannerImage);
                         viewPager.setAdapter(mCustomPagerAdapter);

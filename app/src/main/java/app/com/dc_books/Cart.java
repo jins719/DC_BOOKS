@@ -68,12 +68,12 @@ public class Cart extends AppCompatActivity {
     String ip_head = "http://www.level10boutique.com/";
     String cart_url ="";
 //    String cart_url = ip_head+"admin/services/Appsavecartbag";
-    String cart_delete_url = ip_head+"admin/services/Appcartbagdelete";
-    String promocode_url = ip_head+"admin/services/Apppromocode";
+    String cart_delete_url ="http://athira-pc:8080/dcbooks/api/productshopping/remove_from_cart";
+    String promocode_url ="http://athira-pc:8080/dcbooks/api/productshopping/promo_code";
     String wishlist_add_url = ip_head+"admin/services/Appaddwishlist";
     String wishlist_delete_url = ip_head+"admin/services/Appdeletewishlist";
-    String get_qty_dtls_url = ip_head+"admin/services/Appsavebageditlist";
-    String quantity_edit = ip_head+"admin/services/Appsavebagedit";
+    String get_qty_dtls_url ="http://athira-pc:8080/dcbooks/api/productshopping/save_bag_edit_list";
+    String quantity_edit = "http://athira-pc:8080/dcbooks/api/productshopping/edit_cart";
     Toolbar toolbar;
     ArrayList<CartItems> CartArray=new ArrayList<>();
     String CategoryIds,ProductIds;
@@ -150,30 +150,22 @@ public class Cart extends AppCompatActivity {
         rl_subtot=findViewById(R.id.cv_subtotal);
         rv_cartlist.setItemAnimator(null);
 
-//        CartItems obj=new CartItems("2","http://expertees.com/image/cache/data/products/2013/5250/5250_DeepRoyal_Model_Front_100310-700x700.jpg","Saree","2500","5","1","2","1");
-//        Log.d("dfasfdaf",obj.getProdId());
-//        Log.d("dfasfdaf",obj.getMainImg());
-//        Log.d("dfasfdaf",obj.getOfferPric());
 
-//        for(int i=0;i<10;i++){
-//            CartArray.add(obj);
-//            Log.d("afdsfsafsa",CartArray.toString());
-//        }
 
         isNetworkConnected();
         if(NETCONNECTION==1)
         {
             if( Identifier.equals("7") ){
-                cart_url = ip_head+"admin/services/Appcartbag";
+                cart_url = "http://athira-pc:8080/dcbooks/api/productshopping/show_cart";
                 refreshId="1";
-                CartParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-                CartParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+                CartParams.put("appkey", MainActivity.appkey);
+                CartParams.put("appsecurity", MainActivity.appsecurity);
                 CartParams.put("uniquedevice", android_id);
                 Cart();
             }else {
-                cart_url = ip_head+"admin/services/Appsavecartbag";
-                CartParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-                CartParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+                cart_url = "http://athira-pc:8080/dcbooks/api/productshopping/add_to_cart";
+                CartParams.put("appkey", MainActivity.appkey);
+                CartParams.put("appsecurity", MainActivity.appsecurity);
                 CartParams.put("user_id", user_id);
                 CartParams.put("product_id", prod_id);
                 CartParams.put("productquantity", "1");
@@ -192,10 +184,7 @@ public class Cart extends AppCompatActivity {
                     .show();
         }
         ViewCompat.setNestedScrollingEnabled(rv_cartlist, false);
-//        gridManager = new LinearLayoutManager(this);
-//        rv_cartlist.setLayoutManager(gridManager);
-//        MyAdapter CartAdapter =new MyAdapter(CartArray);
-//        rv_cartlist.setAdapter(CartAdapter);
+
 
         bt_applypromo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -205,8 +194,8 @@ public class Cart extends AppCompatActivity {
                 } else {
                     isNetworkConnected();
                     if (NETCONNECTION == 1) {
-                        PromoCodeParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-                        PromoCodeParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+                        CartParams.put("appkey", MainActivity.appkey);
+                        CartParams.put("appsecurity", MainActivity.appsecurity);
                         PromoCodeParams.put("vouchercode", et_promocode.getText().toString());
                         PromoCodeParams.put("category_id", CategoryIds);
                         PromoCodeParams.put("product_id", ProductIds);
@@ -348,13 +337,11 @@ public class Cart extends AppCompatActivity {
                     ib_checkout.getBackground().setAlpha(255);
                     rl_promo.setVisibility(View.VISIBLE);
                 }
-//                txtFooter = (TextView) v.findViewById(R.id.secondLine);
+
                 v.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                        Intent in =new Intent(Cart.this,ProductDetails.class);
-//                        in.putExtra("ProdID",values.get(getAdapterPosition()).getProdId());
-//                        startActivity(in);
+
                     }
                 });
             }
@@ -402,7 +389,7 @@ public class Cart extends AppCompatActivity {
             Log.d("adfasfdaf",String.valueOf(position));
             String prodTitle = values.get(position).getProdTitle();
             Log.d("adfasfdaf",prodTitle);
-            String mainImgUrl = ip_head+values.get(position).getMainImg();
+            String mainImgUrl = values.get(position).getMainImg();
             String badgeImgUrl=ip_head+values.get(position).getBadgeImg();
             String prodPrice = values.get(position).getOfferPric();
             String prodSize = values.get(position).getProdSize();
@@ -422,19 +409,6 @@ public class Cart extends AppCompatActivity {
             holder.tvProdQty.setText(prodQty);
             holder.tvProdSize.setText(prodSize);
 
-//            holder.tvProdActualPric.setPaintFlags(holder.tvProdActualPric.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
-//            holder.tvProdOfferPric.setText(prodOfferPric);
-//            holder.tvProdOfferPric.setTypeface(custom_bold);
-//            if(getItemCount()== 0){
-//                ib_checkout.getBackground().setAlpha(45);
-//            }else {
-//                ib_checkout.getBackground().setAlpha(0);
-//            }
-//            if(wishStatus.equals("1")){
-//                holder.ibLikeButton.setImageResource(R.mipmap.heartfill);
-//            }else {
-//                holder.ibLikeButton.setImageResource(R.mipmap.heart);
-//            }
             Glide.with(Cart.this)
                     .load(mainImgUrl)
                     .into(holder.ivMainImage);
@@ -450,9 +424,9 @@ public class Cart extends AppCompatActivity {
                         String login_status = s.getString("Login_Status", "");
                         isNetworkConnected();
                         if(NETCONNECTION==1) {
-                                CartDeleteParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-                                CartDeleteParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
-                                CartDeleteParams.put("id", values.get(position).getCartId());
+                            CartDeleteParams.put("appkey", MainActivity.appkey);
+                            CartDeleteParams.put("appsecurity", MainActivity.appsecurity);
+                            CartDeleteParams.put("id", values.get(position).getCartId());
 //                                remove(position);
 //                                if(getItemCount()<1){
 //                                }
@@ -470,53 +444,7 @@ public class Cart extends AppCompatActivity {
                 }
             });
 
-//            holder.ibLikeButton.setOnTouchListener(new View.OnTouchListener() {
-//                @Override
-//                public boolean onTouch(View v, MotionEvent event) {
-//
-//                    if(event.getAction() == MotionEvent.ACTION_DOWN){
-//                        SharedPreferences s = getSharedPreferences(Cart.mp, 0);
-//                        String login_status = s.getString("Login_Status", "");
-//                        isNetworkConnected();
-//                        if(NETCONNECTION==1)
-//                        {
-//                            if (login_status.equals("success")) {
-//                                if (wishStatus.equals("1")) {
-//                                    WishlistDeleteParams.put("user_id", user_id);
-//                                    WishlistDeleteParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-//                                    WishlistDeleteParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
-//                                    WishlistDeleteParams.put("product_id", prodId);
-//                                    Log.d("adfsafdaadd", prodId);
-//                                    holder.ibLikeButton.setImageResource(R.mipmap.heart);
-//                                    CartArray.get(position).setWishStatus("0");
-//                                    WishlistDelete();
-//                                } else {
-//                                    WishlistAddParams.put("user_id", user_id);
-//                                    WishlistAddParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-//                                    WishlistAddParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
-//                                    WishlistAddParams.put("product_id", prodId);
-//                                    Log.d("adfsafdadelete", prodId);
-//                                    holder.ibLikeButton.setImageResource(R.mipmap.heartfill);
-//                                    CartArray.get(position).setWishStatus("1");
-//                                    WishlistAdd();
-//                                }
-//                            }else{
-//                                Intent in=new Intent(Cart.this,LoginActivity.class);
-//                                startActivity(in);
-//                            }
-//                        }else {
-//                            new SweetAlertDialog(Cart.this, SweetAlertDialog.ERROR_TYPE)
-//                                    .setTitleText("No internet")
-//                                    .setContentText("Internet not available, Check your internet connectivity and try again")
-//                                    .show();
-//                        }
-//
-//
-//                        return true;
-//                    }
-//                    return false;
-//                }
-//            });
+
 
             holder.ibEditButton.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -526,34 +454,7 @@ public class Cart extends AppCompatActivity {
                         SharedPreferences s = getSharedPreferences(Cart.mp, 0);
                         String login_status = s.getString("Login_Status", "");
                         qtyEdit(prodQty,stockQty,cartId,prodId);
-//                        isNetworkConnected();
-//                        if(NETCONNECTION==1)
-//                        {
-//                            if (login_status.equals("success")) {
-//                                if (wishStatus.equals("1")) {
-//                                    WishlistDeleteParams.put("product_id", prodId);
-//                                    Log.d("adfsafdaadd", prodId);
-//                                    holder.ibLikeButton.setImageResource(R.mipmap.heart);
-//                                    CartArray.get(position).setWishStatus("0");
-//                                    WishlistDelete();
-//                                } else {
-//                                    WishlistAddParams.put("product_id", prodId);
-//                                    Log.d("adfsafdadelete", prodId);
-//                                    holder.ibLikeButton.setImageResource(R.mipmap.heartfill);
-//                                    CartArray.get(position).setWishStatus("1");
-//                                    WishlistAdd();
-//                                }
-//                            }else{
-//                                Intent in=new Intent(Cart.this,LoginActivity.class);
-//                                startActivity(in);
-//                            }
-//                        }else {
-//                            new SweetAlertDialog(Cart.this, SweetAlertDialog.ERROR_TYPE)
-//                                    .setTitleText("No internet")
-//                                    .setContentText("Internet not available, Check your internet connectivity and try again")
-//                                    .show();
-//                        }
-//
+
 
                         return true;
                     }
@@ -618,8 +519,8 @@ public class Cart extends AppCompatActivity {
                                 String offerPric=resultsArray.getJSONObject(i).getString("sellingprice");
                                 String wishStatus=resultsArray.getJSONObject(i).getString("wishliststatus");
                                 String prodStock=resultsArray.getJSONObject(i).getString("productquantity");
-                                String prodSize=resultsArray.getJSONObject(i).getString("productsize");
-                                String badgeImg=resultsArray.getJSONObject(i).getString("badgename");
+                                //String prodSize=resultsArray.getJSONObject(i).getString("productsize");
+                               // String badgeImg=resultsArray.getJSONObject(i).getString("badgename");
                                 if (resultsArray.getJSONObject(i).has("subtotal")) {
                                     subtotal=resultsArray.getJSONObject(i).getString("subtotal");
                                 }
@@ -630,16 +531,16 @@ public class Cart extends AppCompatActivity {
                                 String categoryId=resultsArray.getJSONObject(i).getString("productcategory");
                                 CartItems obj=new CartItems(
                                         prodId,
-                                        mainImg,
+                                        "http://athira-pc:8080/dcbooks/"+mainImg,
                                         prodTitle,
                                         offerPric,
                                         cartId,
                                         wishStatus,
                                         prodQty,
-                                        categoryId,
+                                        "",
                                         prodStock,
-                                        prodSize,
-                                        badgeImg
+                                        "",
+                                        ""
                                 );
                                 if (i==0){
                                     CategoryIds = categoryId;
@@ -661,33 +562,6 @@ public class Cart extends AppCompatActivity {
                             rv_cartlist.swapAdapter(CartAdapter,false);
                             refreshId="0";
 
-//                            String Status=jsonResponse.getString("status");
-//                            String Message=jsonResponse.getString("result");
-//
-//                            if(Status.equals("true"))
-//                            {
-
-//                                et_login_email.getText().clear();
-//                                et_login_pass.getText().clear();
-
-//                                edit.putString("Username",jsonResponse.getString("name"));
-//                                edit.putString("User_id",jsonResponse.getString("userId"));
-//                                edit.putString("Login_Status","success");
-//                                edit.putString("Firsttime","YES");
-//                                edit.commit();
-//
-//                                Intent in=new Intent(ProductListing.this,MainActivity.class);
-//                                startActivity(in);
-//                                finish();
-//
-//                            }
-//                            else
-//                            {
-//                                new SweetAlertDialog(ProductListing.this, SweetAlertDialog.ERROR_TYPE)
-//                                        .setTitleText("Oops...")
-//                                        .setContentText(Message)
-//                                        .show();
-//                            }
 
                         } catch (JSONException e) {
                             Log.d("JSONExceptionLogin",e.toString());
@@ -727,6 +601,8 @@ public class Cart extends AppCompatActivity {
         pDialog.setCancelable(true);
         pDialog.show();
 
+        System.out.println("json values"+ new JSONObject(CartDeleteParams));
+
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 cart_delete_url, new JSONObject(CartDeleteParams),
                 new Response.Listener<JSONObject>() {
@@ -749,11 +625,11 @@ public class Cart extends AppCompatActivity {
                                         .setTitleText("Removed")
                                         .setContentText(Message)
                                         .show();
-//                                Cart();
-                                cart_url = ip_head+"admin/services/Appcartbag";
+//
+                                cart_url ="http://athira-pc:8080/dcbooks/api/productshopping/show_cart";
                                 CartParams.clear();
-                                CartParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-                                CartParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+                                CartParams.put("appkey", MainActivity.appkey);
+                                CartParams.put("appsecurity", MainActivity.appsecurity);
                                 CartParams.put("uniquedevice",android_id);
                                 refreshId="1";
                                 Cart();
@@ -1079,10 +955,10 @@ public class Cart extends AppCompatActivity {
                             if(Status.equals("true"))
                             {
                                 CartAdapter.notifyDataSetChanged();
-                                cart_url = ip_head+"admin/services/Appcartbag";
+                                cart_url ="http://athira-pc:8080/dcbooks/api/productshopping/show_cart";
                                 CartParams.clear();
-                                CartParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-                                CartParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+                                CartParams.put("appkey", MainActivity.appkey);
+                                CartParams.put("appsecurity", MainActivity.appsecurity);
                                 CartParams.put("uniquedevice",android_id);
                                 System.out.println("dsajfkjaksdjdfksaj"+CartParams.toString());
                                 refreshId="1";
@@ -1091,18 +967,7 @@ public class Cart extends AppCompatActivity {
                                         .setTitleText("Success")
                                         .setContentText(Message)
                                         .show();
-//                                et_login_email.getText().clear();
-//                                et_login_pass.getText().clear();
-
-//                                edit.putString("Username",jsonResponse.getString("name"));
-//                                edit.putString("User_id",jsonResponse.getString("userId"));
-//                                edit.putString("Login_Status","success");
-//                                edit.putString("Firsttime","YES");
-//                                edit.commit();
 //
-//                                Intent in=new Intent(ProductListing.this,MainActivity.class);
-//                                startActivity(in);
-//                                finish();
 
                             }
                             else
@@ -1300,8 +1165,8 @@ public class Cart extends AppCompatActivity {
 
         isNetworkConnected();
         if (NETCONNECTION == 1) {
-            GetQtyDtlsParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-            GetQtyDtlsParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+            GetQtyDtlsParams.put("appkey", MainActivity.appkey);
+            GetQtyDtlsParams.put("appsecurity", MainActivity.appsecurity);
             GetQtyDtlsParams.put("id", qtyid);
             getQtyDetails();
 
@@ -1373,8 +1238,8 @@ public class Cart extends AppCompatActivity {
             public void onClick(View view) {
                 isNetworkConnected();
                 if (NETCONNECTION == 1) {
-                    QtyEditParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-                    QtyEditParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+                    QtyEditParams.put("appkey", MainActivity.appkey);
+                    QtyEditParams.put("appsecurity", MainActivity.appsecurity);
                     QtyEditParams.put("id", qtyid);
                     QtyEditParams.put("product_id", prodId);
                     Log.d("vcsadasfds",String.valueOf(getqty));

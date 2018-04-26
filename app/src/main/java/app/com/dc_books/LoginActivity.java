@@ -72,10 +72,10 @@ public class LoginActivity extends AppCompatActivity {
     Toolbar toolbar;
     public static final String mp = "";
     int NETCONNECTION;
-    String ip_head = "http://192.168.1.18:8080/dcbooks/";
-    String login_url= "http://192.168.1.18:8080/dcbooks/api/user/login";
-    String register_url= "http://192.168.1.18:8080/dcbooks/api/user/register";
-    String forgot_password_url="http://192.168.1.18:8080/dcbooks/api/user/forgot_password";
+    String ip_head = "http://athira-pc:8080/dcbooks/";
+    String login_url= "http://athira-pc:8080/dcbooks/api/user/login";
+    String register_url= "http://athira-pc:8080/dcbooks/api/user/register";
+    String forgot_password_url="http://athira-pc:8080/dcbooks/api/user/forgot_password";
     Map<String, String> LoginParams = new HashMap<>();
     Map<String, String> RegisterParams = new HashMap<>();
     Map<String, String> ForgotPassParams = new HashMap<>();
@@ -774,7 +774,7 @@ public class LoginActivity extends AppCompatActivity {
                                 LoginParams.put("firstname", firstname);
                                 LoginParams.put("lastname", lastname);
 
-                                login_url= "http://192.168.1.18:8080/dcbooks/api/user/social_login";
+                                login_url= "http://athira-pc:8080/dcbooks/api/user/social_login";
 
 
                                 isNetworkConnected();
@@ -834,7 +834,7 @@ public class LoginActivity extends AppCompatActivity {
             LoginParams.put("lastname", lastname);
             LoginParams.put("applogintype", "Gmail");
 
-            login_url= "http://192.168.1.18:8080/dcbooks/api/user/social_login";
+            login_url= "http://athira-pc:8080/dcbooks/api/user/social_login";
 
 
             isNetworkConnected();

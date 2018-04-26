@@ -73,7 +73,7 @@
                     android:layout_alignLeft="@+id/textView25"
                     android:layout_alignStart="@+id/textView25"
                     android:layout_below="@+id/textView26"
-                    android:text="Size :"/>
+                    android:text="Rs :"/>
 
                 <TextView
                     android:id="@+id/textView44"

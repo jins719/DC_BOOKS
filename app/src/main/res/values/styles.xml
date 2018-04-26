@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -6,18 +6,14 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:navigationBarColor" tools:targetApi="21">#2d8e47</item>
 
     </style>
-
 
     <style name="RatingBar" parent="Theme.AppCompat">
-        <item name="colorControlNormal">#f0c141</item>
+        <item name="colorControlNormal">#a99f9f</item>
+        <item name="colorControlActivated">#4bba32</item>
     </style>
-    <style name="foodRatingBar" parent="@android:style/Widget.RatingBar">
-        <item name="android:progressDrawable">@drawable/ratingstars</item>
-        <item name="android:minHeight">25dip</item>
-        <item name="android:paddingLeft">1dip</item>
-        <item name="android:maxWidth">150dip</item>
-    </style>
+
 
 </resources>

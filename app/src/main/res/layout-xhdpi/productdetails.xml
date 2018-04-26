@@ -259,17 +259,102 @@
                         />
 
 
-                    <RatingBar
+                    <com.iarcuschin.simpleratingbar.SimpleRatingBar
                         android:id="@+id/ratingbar"
-                        style="@style/foodRatingBar"
+                        style ="?android:attr/ratingBarStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/textView8"
-                        android:layout_marginBottom="10dp"
+
                         android:layout_marginLeft="10dp"
                         android:layout_marginTop="10dp"
-                        android:theme="@style/RatingBar"
+                        app:srb_starSize="25dp"
+                        app:srb_numberOfStars="5"
+                        app:srb_stepSize="0.5"
+                        app:srb_starBorderWidth="1"
+                        app:srb_borderColor="#130c0c"
+                        app:srb_fillColor="#edbb15"
+
                         />
+
+
+                    <LinearLayout
+                        android:id="@+id/coveringlayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical"
+                        android:layout_below="@+id/ratingbar">
+
+
+                        <Button
+                            android:id="@+id/paperback"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="10dp"
+                            android:textColor="#604E05"
+                            android:textSize="12dp"
+                            android:elevation="5dp"
+                            android:gravity="center_horizontal|center_vertical"
+                            android:background="@drawable/coveringlayout_background"
+                            android:text=""/>
+
+                        <Button
+                            android:id="@+id/usedbook"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="10dp"
+                            android:textColor="#604E05"
+                            android:textSize="12dp"
+                            android:elevation="5dp"
+                            android:background="@drawable/coveringlayout_background"
+                            android:text=""/>
+
+                        <Button
+                            android:id="@+id/hardcover"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:textColor="#604E05"
+                            android:textSize="12dp"
+                            android:elevation="5dp"
+                            android:background="@drawable/coveringlayout_background"
+                            android:text=""/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical"
+                        android:layout_below="@+id/coveringlayout">
+
+                        <Button
+                            android:id="@+id/ebook"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/ebook"
+                            android:layout_marginLeft="10dp"
+                            android:textColor="#659512"
+                            android:text="EBOOK"/>
+
+                        <Button
+                            android:id="@+id/audiobook"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:textColor="#15839B"
+                            android:background="@drawable/audiobook"
+                            android:text="AUDIO BOOK"/>
+                    </LinearLayout>
 
 
                 </RelativeLayout>
@@ -279,7 +364,7 @@
             <android.support.v7.widget.CardView
                 android:id="@+id/cardview2"
                 android:layout_width="0dp"
-                android:layout_height="473dp"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
@@ -405,7 +490,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignLeft="@+id/T_category"
                         android:layout_alignStart="@+id/T_category"
-                        android:layout_below="@+id/T_category"
+                        android:layout_below="@+id/category"
                         android:layout_marginTop="10dp"
                         android:text="ISBN : "
                         android:textColor="#000"
@@ -667,6 +752,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignTop="@+id/productnameheading"
                         android:layout_marginRight="10dp"
+                        android:textSize="16dp"
                         android:layout_toEndOf="@+id/productnameheading"
                         android:layout_toRightOf="@+id/productnameheading"
                         android:text=""/>
@@ -699,16 +785,20 @@
                         android:layout_marginTop="8dp"
                         android:text="Your Ratings:"/>
 
-                    <RatingBar
+                    <com.iarcuschin.simpleratingbar.SimpleRatingBar
                         android:id="@+id/ratingbar2"
-                        style="@style/foodRatingBar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/yourrating"
                         android:layout_marginBottom="10dp"
                         android:layout_marginLeft="10dp"
                         android:layout_marginTop="8dp"
-                        android:theme="@style/RatingBar"
+                        app:srb_starSize="25dp"
+                        app:srb_stepSize="0.5"
+                        app:srb_numberOfStars="5"
+                        app:srb_starBorderWidth="1"
+                        app:srb_borderColor="#130c0c"
+                        app:srb_fillColor="#edbb15"
                         />
 
                     <android.support.design.widget.TextInputLayout

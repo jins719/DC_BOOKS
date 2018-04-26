@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity{
                 img_account.setImageResource(R.mipmap.topiconaccount);
             } else {
                 t_name.setText(Name);
-                t_login.setText(Email);
+                t_login.setText("Log out");
                 img_account.setImageResource(R.mipmap.topicon04);
 
                     Picasso.with(MainActivity.this)

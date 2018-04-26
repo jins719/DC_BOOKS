@@ -71,9 +71,9 @@ public class Profile extends AppCompatActivity {
     String firstname,lastname,email,mobilenumber,gender_id,oldpasw,newpasw,confirmpasw;
     int NETCONNECTION;
 
-    String profiledetail_url="http://192.168.1.18:8080/dcbooks/api/user/show_profile";
-    String profileupdate="http://192.168.1.18:8080/dcbooks/api/user/update_profile";
-    String password_update_url="http://192.168.1.18:8080/dcbooks/api/user/update_password";
+    String profiledetail_url="http://athira-pc:8080/dcbooks/api/user/show_profile";
+    String profileupdate="http://athira-pc:8080/dcbooks/api/user/update_profile";
+    String password_update_url="http://athira-pc:8080/dcbooks/api/user/update_password";
 
     Map<String, String> ProfileDetailsParams = new HashMap<String, String>();
     Map<String, String> PasswordParams = new HashMap<String, String>();
@@ -187,7 +187,7 @@ public class Profile extends AppCompatActivity {
             public void onClick(View view) {
 
                 Intent in=new Intent(Profile.this,Full_Image_View.class);
-                in.putExtra("path","http://192.168.1.18:8080/dcbooks"+image);
+                in.putExtra("path","http://athira-pc:8080/dcbooks"+image);
                 startActivity(in);
             }
         });
@@ -446,13 +446,13 @@ public class Profile extends AppCompatActivity {
 
 
                                 Picasso.with(Profile.this)
-                                            .load("http://192.168.1.18:8080/dcbooks/"+image)
+                                            .load("http://athira-pc:8080/dcbooks/"+image)
                                             .placeholder(R.mipmap.avtar)
                                             .error(R.mipmap.avtar)
                                             .transform(new CircleTransform())
                                             .into(img_dp);
 
-                                    edit.putString("UserImage","http://192.168.1.18:8080/dcbooks"+image);
+                                    edit.putString("UserImage","http://athira-pc:8080/dcbooks"+image);
                                     edit.commit();
 
 

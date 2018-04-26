@@ -64,11 +64,11 @@ public class ProductListing extends AppCompatActivity {
     SharedPreferences.Editor edit;
     public static final String mp = "";
     Toolbar toolbar;
-    String ip_head = "http://192.168.1.18:8080/dcbooks";
+    String ip_head = "http://athira-pc:8080/dcbooks";
     String product_url = ip_head+"/api/product/list_by_category";
-    String wishlist_add_url ="http://192.168.1.18:8080/dcbooks/api/wishlist/add";
+    String wishlist_add_url ="http://athira-pc:8080/dcbooks/api/wishlist/add";
     String sort_url = ip_head+"admin/services/Appsearchsorting";
-    String wishlist_delete_url ="http://192.168.1.18:8080/dcbooks/api/wishlist/remove";
+    String wishlist_delete_url ="http://athira-pc:8080/dcbooks/api/wishlist/remove";
 
     String search_url =ip_head+"admin/services/Apphomesearchlist";
     String filter_url =ip_head+"admin/services/Appfilterresult";
@@ -89,6 +89,9 @@ public class ProductListing extends AppCompatActivity {
     String user_id ,adpaterRefresh="0";
     boolean mIsReceiverRegistered = false;
     MyBroadcastReceiver mReceiver = null;
+
+    ImageButton ib_sort;
+    int ib_SortState=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +155,7 @@ public class ProductListing extends AppCompatActivity {
         t_relevance=findViewById(R.id.textView30);
         img_revelance=findViewById(R.id.imageView11);
         rtv_searchlayout=findViewById(R.id.relativeLayout2);
+        ib_sort=findViewById(R.id.ib_sort);
         t_relevance.setTypeface(font2);
         t_high_to_low.setTypeface(font2);
         t_low_to_high.setTypeface(font2);
@@ -274,12 +278,29 @@ public class ProductListing extends AppCompatActivity {
             }
         }
 
+        ib_sort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(ib_SortState==0)
+                {
+                    sortlayout.setVisibility(View.VISIBLE);
+                    ib_SortState=1;
+                }
+                else
+                {
+                    ib_SortState=0;
+                    sortlayout.setVisibility(View.GONE);
+                }
+                }
+        });
+
         t_low_to_high.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 img_low_to_high.setVisibility(View.VISIBLE);
                 img_high_to_low.setVisibility(View.INVISIBLE);
                 img_revelance.setVisibility(View.INVISIBLE);
+                ib_SortState=0;
                 SortParams.put("sortamount","2");
                 System.out.println("sorkdjfkasjdfk"+SortParams.toString());
                 sortlayout.setVisibility(View.GONE);
@@ -295,6 +316,7 @@ public class ProductListing extends AppCompatActivity {
                 img_low_to_high.setVisibility(View.INVISIBLE);
                 img_high_to_low.setVisibility(View.VISIBLE);
                 img_revelance.setVisibility(View.INVISIBLE);
+                ib_SortState=0;
                 SortParams.put("sortamount","1");
                 System.out.println("sorkdjfkasjdfk"+SortParams.toString());
                 sortlayout.setVisibility(View.GONE);
@@ -311,6 +333,7 @@ public class ProductListing extends AppCompatActivity {
                 img_high_to_low.setVisibility(View.INVISIBLE);
                 img_revelance.setVisibility(View.VISIBLE);
                 sortlayout.setVisibility(View.GONE);
+                ib_SortState=0;
                 SORTLAYOUT_STATE=1;
                 adpaterRefresh="1";
                 Product();
@@ -610,7 +633,7 @@ public class ProductListing extends AppCompatActivity {
                               //  String badge=resultsArray.getJSONObject(i).getString("badgename");
                                 ProductItems obj=new ProductItems(
                                         prodId,
-                                        "http://192.168.1.18:8080/dcbooks/"+mainImg,
+                                        "http://athira-pc:8080/dcbooks/"+mainImg,
                                         prodTitle,
                                         prodActPric,
                                         prodOffrPric,

@@ -57,8 +57,6 @@ public class OrderList extends AppCompatActivity {
     int SearchlayoutVisibleState=0;
     RelativeLayout rtv_searchlayout;
     SearchView et_search;
-    String appkey="TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc";
-    String appsecurity="TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==";
 
 
 
@@ -118,8 +116,8 @@ public class OrderList extends AppCompatActivity {
         isNetworkConnected();
         if(NETCONNECTION==1)
         {
-            OrderParams.put("appkey",appkey);
-            OrderParams.put("appsecurity",appsecurity);
+            OrderParams.put("appkey",MainActivity.appkey);
+            OrderParams.put("appsecurity",MainActivity.appsecurity);
             OrderParams.put("user_id",userID);
 
 
@@ -182,7 +180,7 @@ public class OrderList extends AppCompatActivity {
     private void Call_OrderList() {
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                "http://www.level10boutique.com/admin/services/Apporderlisting", new JSONObject(OrderParams),
+                "http://athira-pc:8080/dcbooks/api/order/order_listing", new JSONObject(OrderParams),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {

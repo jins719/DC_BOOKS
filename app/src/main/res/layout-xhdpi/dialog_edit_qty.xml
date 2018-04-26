@@ -36,12 +36,13 @@
             android:id="@+id/bt_plus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/ebook"
             android:text="+"
+            android:layout_marginRight="10dp"
             android:textSize="30dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+            />
 
         <Button
             android:id="@+id/bt_minus"
@@ -49,6 +50,8 @@
             android:layout_height="wrap_content"
             android:text="-"
             android:textSize="30dp"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/ebook"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -64,6 +67,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Apply"
+        android:background="@drawable/audiobook"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

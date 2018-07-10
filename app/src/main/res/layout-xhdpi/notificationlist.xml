@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#fff"
     tools:layout_editor_absoluteY="25dp">
 
     <android.support.design.widget.AppBarLayout
@@ -148,6 +149,7 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycleview"
+        android:background="#fff"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"

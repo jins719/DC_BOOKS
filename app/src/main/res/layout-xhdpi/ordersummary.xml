@@ -132,7 +132,7 @@
                 android:layout_marginTop="8dp"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="2dp"
-                app:cardElevation="5dp"
+                app:cardElevation="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -164,15 +164,16 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentStart="true"
-                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="0.5dp"
                 android:visibility="visible"
                 app:cardBackgroundColor="#fff"
-                app:cardCornerRadius="5dp"
-                app:layout_constraintTop_toBottomOf="@+id/cardview"
-                tools:layout_editor_absoluteX="0dp">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardview4">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -183,17 +184,18 @@
                         android:id="@+id/textView30"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="16dp"
-                        android:textStyle="bold"
                         android:layout_marginLeft="8dp"
                         android:layout_marginTop="15dp"
-                        android:text="Price Details"/>
+                        android:text="Price Details"
+                        android:textSize="16dp"
+                        android:textColor="#99d03b"
+                        android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/textView19"
-                        android:layout_below="@+id/textView30"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_below="@+id/textView30"
                         android:layout_marginLeft="8dp"
                         android:layout_marginTop="10dp"
                         android:text="SUB TOTAL"/>
@@ -258,30 +260,134 @@
 
             </android.support.v7.widget.CardView>
 
+            <android.support.v7.widget.CardView
+                android:id="@+id/cardview4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardview">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+
+                    <LinearLayout
+                        android:id="@+id/linear3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textView60"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textSize="18dp"
+                            android:textStyle="bold"
+                            android:textColor="#99d03b"
+                            android:layout_marginLeft="10dp"
+                            android:text="Gift voucher code"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                    android:id="@+id/linear1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_below="@+id/linear3"
+                    android:orientation="horizontal">
+
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/ti_vouchercode"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+
+                        android:layout_weight="1">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/te_vouchercode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="16dp"
+                            android:hint="Voucher code"/>
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/ti_pin"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/te_pin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="16dp"
+                            android:hint="Enter pin"/>
+                    </android.support.design.widget.TextInputLayout>
+                </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/linear2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/linear1"
+                        android:gravity="right"
+                        android:layout_marginBottom="10dp"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/button9"
+                            android:layout_width="120dp"
+                            android:layout_marginRight="10dp"
+                            android:background="@drawable/cart_round_button"
+                            android:layout_height="35dp"
+                            android:textColor="#fff"
+                            android:onClick="apply"
+                            android:text="Apply"/>
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+
+            </android.support.v7.widget.CardView>
+
 
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v4.widget.NestedScrollView>
 
 
-
     <ImageButton
         android:id="@+id/imageButton"
         android:layout_width="0dp"
         android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
-        android:background="#FFCF00"
-        android:src="@mipmap/confirmbutton"
         android:layout_marginTop="0dp"
+        android:background="#99d03b"
+        android:onClick="payment"
+        android:src="@mipmap/confirmbutton"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        android:layout_alignParentBottom="true"/>
+        app:layout_constraintVertical_bias="1.0"/>
 
 </RelativeLayout>
 

@@ -33,7 +33,6 @@ public class Full_Image_View extends AppCompatActivity {
 
         //PhotoViewAttacher mAttacher = new PhotoViewAttacher(imageView);
 
-        toolbar =findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         try {

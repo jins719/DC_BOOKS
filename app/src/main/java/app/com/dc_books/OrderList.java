@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -130,6 +131,32 @@ public class OrderList extends AppCompatActivity {
                     .show();
         }
 
+        et_search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //Log.e("onQueryTextChange", "called");
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                Intent in=new Intent(OrderList.this,ProductListing.class);
+                in.putExtra("Keyword",query);
+                in.putExtra("Identifier","0");
+                startActivity(in);
+
+                rtv_searchlayout.setVisibility(View.GONE);
+                SearchlayoutVisibleState = 0;
+                et_search.clearFocus();
+                et_search.setQuery("", false);
+
+                return false;
+            }
+
+        });
+
 
     }
     public void search(View v)
@@ -180,7 +207,7 @@ public class OrderList extends AppCompatActivity {
     private void Call_OrderList() {
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                "http://athira-pc:8080/dcbooks/api/order/order_listing", new JSONObject(OrderParams),
+                "https://dcbookstore.tk/api/order/order_listing", new JSONObject(OrderParams),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -200,9 +227,10 @@ public class OrderList extends AppCompatActivity {
                                 String orderstatusname = jsonChild.getString("orderstatusname");
                                 String orderstatus = jsonChild.getString("orderstatus");
                                 String date = jsonChild.getString("date");
-                                String image= "http://www.level10boutique.com/"+jsonChild.getString("image");
+                                String ordernumber=jsonChild.getString("ordernumber");
+                                String image= "https://dcbookstore.tk/"+jsonChild.getString("image");
 
-                                ItemData itemsData = new ItemData(id,productname,orderstatusname,orderstatus,date,image);
+                                ItemData itemsData = new ItemData(id,productname,orderstatusname,orderstatus,date,image,ordernumber);
                                 arraylist.add(itemsData);
 
                             }
@@ -235,7 +263,6 @@ public class OrderList extends AppCompatActivity {
 
                         layoutManager = new LinearLayoutManager(OrderList.this);
                         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                        layoutManager.setReverseLayout(true);
                         rcv_orderlist.setLayoutManager(layoutManager);
                         mAdapter = new MyAdapter(arraylist);
                         rcv_orderlist.setAdapter(mAdapter);
@@ -262,8 +289,8 @@ public class OrderList extends AppCompatActivity {
 
     public class ItemData {
 
-        String id,productname,orderstatusname,orderstatus,date,image;
-        public ItemData(String ID,String ProductName,String Orderstatusname,String Orderstatus,String Date,String Image){
+        String id,productname,orderstatusname,orderstatus,date,image,orderid;
+        public ItemData(String ID,String ProductName,String Orderstatusname,String Orderstatus,String Date,String Image,String Ordernumber){
 
             this.id = ID;
             this.productname = ProductName;
@@ -271,6 +298,7 @@ public class OrderList extends AppCompatActivity {
             this.orderstatus=Orderstatus;
             this.date = Date;
             this.image = Image;
+            this.orderid=Ordernumber;
         }
         public String getid()
         {
@@ -295,6 +323,10 @@ public class OrderList extends AppCompatActivity {
         public String getorderstatus()
         {
             return this.orderstatus;
+        }
+        public String getorderid()
+        {
+            return this.orderid;
         }
 
     }
@@ -336,12 +368,12 @@ public class OrderList extends AppCompatActivity {
             if(orderlist.get(position).getorderstatus().equals("4"))
             {
                 viewHolder.orderstatus.setTextColor(Color.parseColor("#008000"));
-                viewHolder.date.setTextColor(Color.parseColor("#008000"));
+                //viewHolder.date.setTextColor(Color.parseColor("#008000"));
             }
             else if(orderlist.get(position).getorderstatus().equals("1"))
             {
-                viewHolder.orderstatus.setTextColor(Color.parseColor("#ff0000"));
-                viewHolder.date.setTextColor(Color.parseColor("#ff0000"));
+                viewHolder.orderstatus.setTextColor(Color.parseColor("#008000"));
+               // viewHolder.date.setTextColor(Color.parseColor("#ff0000"));
             }
 
             viewHolder.productname.setText(orderlist.get(position).getproductname());
@@ -360,6 +392,7 @@ public class OrderList extends AppCompatActivity {
 
             public TextView productname,orderstatus,date;
             public ImageView product_img;
+            public Button ViewOrder;
 
 
 
@@ -370,6 +403,17 @@ public class OrderList extends AppCompatActivity {
                 orderstatus=itemLayoutView.findViewById(R.id.textView39);
                 date=itemLayoutView.findViewById(R.id.textView40);
                 product_img=itemLayoutView.findViewById(R.id.imageView15);
+                ViewOrder=itemLayoutView.findViewById(R.id.button8);
+
+                itemLayoutView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        Intent in=new Intent(OrderList.this,OrderlistDetails.class);
+                        in.putExtra("Ordernumber",orderlist.get(getAdapterPosition()).getorderid());
+                        startActivity(in);
+                    }
+                });
             }
         }// Return the size of your itemsData (invoked by the layout manager)
 

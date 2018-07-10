@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -11,6 +12,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -28,7 +31,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -45,6 +50,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import instamojo.library.InstamojoPay;
+import instamojo.library.InstapayListener;
 
 /**
  * Created by JINS on 10/13/2017.
@@ -53,15 +60,23 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class OrderSummary extends AppCompatActivity {
 
     Typeface font,font2,font3;
-    String addresslist_url="http://athira-pc:8080/dcbooks/api/user/address_list";
-    String orderitems_url="http://athira-pc:8080/dcbooks/api/order/order_summary_list";
-    String addressdelete_url="http://athira-pc:8080/dcbooks/api/user/delete_address";
-    String deliverycharge_url="http://athira-pc:8080/dcbooks/api/productshopping/delivery_charge";
+    String addresslist_url="https://dcbookstore.tk/api/user/address_list";
+    String orderitems_url="https://dcbookstore.tk/api/order/order_summary_list";
+    String addressdelete_url="https://dcbookstore.tk/api/user/delete_address";
+    String deliverycharge_url="https://dcbookstore.tk/api/productshopping/delivery_charge";
+    String voucherurl="https://dcbookstore.tk/api/order/apply_voucher";
+    String Buyurl="https://dcbookstore.tk/api/order/buy";
+    String Afterpayment_url="https://dcbookstore.tk/api/order/completepayment";
+    String Clear_cart="https://dcbookstore.tk/api/productshopping/clear_cart";
 
     Map<String, String> AddressParams = new HashMap<String, String>();
     Map<String, String> OrderParams = new HashMap<String, String>();
     Map<String, String> AddresDeleteParams = new HashMap<String, String>();
     Map<String, String> DeliveryParams = new HashMap<String, String>();
+    Map<String, String> VoucherParams = new HashMap<String, String>();
+    Map<String, String> Buyparams = new HashMap<String, String>();
+    Map<String, String> PaymentCompleteParams = new HashMap<String, String>();
+    Map<String, String> ClearCartparams = new HashMap<String, String>();
 
     String appkey="TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc";
     String appsecurity="TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==";
@@ -105,6 +120,30 @@ public class OrderSummary extends AppCompatActivity {
     SharedPreferences s;
     TextView t_pricedetails;
 
+    TextInputLayout ti_vouchercode;
+    TextInputLayout ti_pin;
+
+    TextInputEditText te_vouchercode;
+    TextInputEditText te_pin;
+
+    String voucheramount="",voucherid="";
+
+    double Delivery_charge=0;
+
+    String phone,email,name;
+    String android_id;
+    String cart_id;
+    String deliverycharge;
+    String SpMerchantRefNo;
+    String totalweight;
+
+
+    JsonObjectRequest jsonObjReq;
+
+    double totoalpayamount;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +180,13 @@ public class OrderSummary extends AppCompatActivity {
         t_Heading=findViewById(R.id.testview01);
         t_pricedetails=findViewById(R.id.textView30);
 
+        ti_vouchercode=findViewById(R.id.ti_vouchercode);
+        ti_pin=findViewById(R.id.ti_pin);
+
+        te_vouchercode=findViewById(R.id.te_vouchercode);
+        te_pin=findViewById(R.id.te_pin);
+
+
 
 
         t_subtotal.setTypeface(font);
@@ -173,30 +219,367 @@ public class OrderSummary extends AppCompatActivity {
         edit = sp.edit();
         s = getSharedPreferences(LoginActivity.mp, 0);
         userID=s.getString("User_id","");
-        String android_id = Settings.Secure.getString(this.getContentResolver(),
+        android_id = Settings.Secure.getString(this.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
+
+        ClearCartparams.put("appkey",MainActivity.appkey);
+        ClearCartparams.put("appsecurity",MainActivity.appsecurity);
+        ClearCartparams.put("uniquedevice",android_id);
 
         OrderParams.put("appkey",MainActivity.appkey);
         OrderParams.put("appsecurity",MainActivity.appsecurity);
         OrderParams.put("uniquedevice",android_id);
         OrderParams.put("user_id",userID);
         OrderParams.put("subtotalproduct",getIntent().getExtras().getString("subtotal"));
-        OrderParams.put("totalpayamount",getIntent().getExtras().getString("totalpayamount"));
+        OrderParams.put("totalpayamount",getIntent().getExtras().getString("Weight"));
         OrderParams.put("vouchername",getIntent().getExtras().getString("vouchername"));
         OrderParams.put("voucheramount",getIntent().getExtras().getString("voucheramount"));
         OrderParams.put("totalprodductweight",getIntent().getExtras().getString("Weight"));
         call_OrderItems();
 
+        }
+
+   public void payment(View v)
+   {
+       isNetworkConnected();
+       if(NETCONNECTION==1)
+       {
+           if(AddressID.size()==0)
+           {
+               new SweetAlertDialog(OrderSummary.this, SweetAlertDialog.ERROR_TYPE)
+                       .setTitleText("Please add a delivery address")
+                       .show();
+           }
+           else if(selectaddressid.equals(""))
+           {
+               new SweetAlertDialog(OrderSummary.this, SweetAlertDialog.ERROR_TYPE)
+                       .setTitleText("Please select a delivery address")
+                       .show();
+           }
+           else
+           {
+
+               isNetworkConnected();
+               if(NETCONNECTION==1) {
+                   Buyparams.put("appkey", MainActivity.appkey);
+                   Buyparams.put("appsecurity", MainActivity.appsecurity);
+                   Buyparams.put("uniquedevice", android_id);
+                   Buyparams.put("user_id", userID);
+                   Buyparams.put("orginalcarttotal", t_subtotalvalue.getText().toString());
+                   Buyparams.put("carttotal", t_payamountvalue.getText().toString());
+                   Buyparams.put("UseraddressesID", selectaddressid);
+                   Buyparams.put("voucheramount", voucheramount);
+                   Buyparams.put("voucherid", voucherid);
+                   Buyparams.put("deliveryamount", deliverycharge);
+                   Buyparams.put("orginal", t_subtotalvalue.getText().toString());
+                   Buyparams.put("cart_id", cart_id);
+                   Call_paymentwebservice();
+               }else
+               {
+                   new SweetAlertDialog(OrderSummary.this, SweetAlertDialog.ERROR_TYPE)
+                       .setTitleText("No internet")
+                       .setContentText("Internet not available, Cross check your internet connectivity and try again")
+                       .show();
+
+               }
+
+               }
+       }
+       else
+       {
+           new SweetAlertDialog(OrderSummary.this, SweetAlertDialog.ERROR_TYPE)
+                   .setTitleText("No internet")
+                   .setContentText("Internet not available, Cross check your internet connectivity and try again")
+                   .show();
+       }
+
+       }
+    private void callInstamojoPay(String email, String phone, String amount, String purpose, String buyername) {
+        final Activity activity = this;
+        InstamojoPay instamojoPay = new InstamojoPay();
+        IntentFilter filter = new IntentFilter("ai.devsupport.instamojo");
+        registerReceiver(instamojoPay, filter);
+        JSONObject pay = new JSONObject();
+        try {
+            pay.put("email", email);
+            pay.put("phone", phone);
+            pay.put("purpose", purpose);
+            pay.put("amount", amount);
+            pay.put("name", buyername);
+            pay.put("send_sms", true);
+            pay.put("send_email", true);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        initListener();
+        instamojoPay.start(activity, pay, listener);
+    }
+
+    InstapayListener listener;
 
 
+    private void initListener() {
+        listener = new InstapayListener() {
+            @Override
+            public void onSuccess(String response) {
 
 
+                String orderid= response.substring(response.indexOf("orderId=")+8, response.indexOf(":txnId"));
+                System.out.println("orderid "+orderid);
 
+                String paymentid= response.substring(response.indexOf("paymentId=")+10, response.indexOf(":token"));
+                System.out.println("paymentid "+paymentid);
+
+                String transactionid= response.substring(response.indexOf("txnId=")+6, response.indexOf(":paymentId"));
+                System.out.println("transactionid "+transactionid);
+
+
+                PaymentCompleteParams.put("appkey",MainActivity.appkey);
+                PaymentCompleteParams.put("appsecurity",MainActivity.appsecurity);
+                PaymentCompleteParams.put("paystatus","success");
+                PaymentCompleteParams.put("ResponseCode","0");
+                PaymentCompleteParams.put("ResponseMessage","Online Payment Success");
+                PaymentCompleteParams.put("PaymentID",paymentid);
+                PaymentCompleteParams.put("MerchantRefNo",orderid);
+                PaymentCompleteParams.put("paymenttype","Online Payment");
+                PaymentCompleteParams.put("totalamount",t_payamountvalue.getText().toString());
+                PaymentCompleteParams.put("transactionid",transactionid);
+                PaymentCompleteParams.put("user_id",userID);
+                PaymentCompleteParams.put("paymentmode_id","app-"+orderid);
+                PaymentCompleteParams.put("PaymentMode","Online Payment");
+                PaymentCompleteParams.put("uniquedevice",android_id);
+                PaymentCompleteParams.put("SpMerchantRefNo",SpMerchantRefNo);
+                Call_afterpayment();
+            }
+
+            @Override
+            public void onFailure(int code, String reason) {
+
+                System.out.print("payment response Failed:"+reason.toString());
+                Toast.makeText(getApplicationContext(), "Failed: " + reason, Toast.LENGTH_LONG)
+                        .show();
+
+                PaymentCompleteParams.put("appkey",appkey);
+                PaymentCompleteParams.put("appsecurity",appsecurity);
+                PaymentCompleteParams.put("paystatus","failed");
+                PaymentCompleteParams.put("ResponseCode","1");
+                PaymentCompleteParams.put("ResponseMessage","Online Payment Failed");
+                PaymentCompleteParams.put("PaymentID","failed");
+                PaymentCompleteParams.put("MerchantRefNo", String.valueOf(System.currentTimeMillis()));
+                PaymentCompleteParams.put("paymenttype","Online Payment");
+                PaymentCompleteParams.put("totalamount",t_payamountvalue.getText().toString());
+                PaymentCompleteParams.put("transactionid","failed");
+                PaymentCompleteParams.put("user_id",userID);
+                PaymentCompleteParams.put("paymentmode_id","failed");
+                PaymentCompleteParams.put("PaymentMode","Online Payment");
+                PaymentCompleteParams.put("uniquedevice",android_id);
+                PaymentCompleteParams.put("SpMerchantRefNo",SpMerchantRefNo);
+                Call_afterpayment();
+
+
+            }
+        };
+    }
+    public void apply(View v)
+    {
+
+        ti_pin.setError(null);
+        ti_vouchercode.setError(null);
+        if(te_vouchercode.getText().toString().equals(""))
+        {
+            ti_vouchercode.setError("Enter valid voucher");
+
+        }else if(te_pin.getText().toString().equals(""))
+        {
+            ti_pin.setError("Enter valid pin");
+        }
+        else
+        {
+            isNetworkConnected();
+            if(NETCONNECTION==1)
+            {
+                VoucherParams.put("appkey",MainActivity.appkey);
+                VoucherParams.put("appsecurity",MainActivity.appsecurity);
+                VoucherParams.put("code",te_vouchercode.getText().toString());
+                VoucherParams.put("pin",te_pin.getText().toString());
+
+                call_applyVoucher();
+            }
+            else
+            {
+                new SweetAlertDialog(OrderSummary.this, SweetAlertDialog.ERROR_TYPE)
+                        .setTitleText("No internet")
+                        .setContentText("Internet not available, Cross check your internet connectivity and try again")
+                        .show();
+            }
+        }
     }
     public void add_address(View v)
     {
         Intent in=new Intent(this,AddAddress.class);
         startActivity(in);
+    }
+    public void Call_paymentwebservice()
+    {
+        final SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Loading");
+        pDialog.setCancelable(true);
+        pDialog.show();
+
+        System.out.println("Buy params"+new JSONObject(Buyparams));
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                Buyurl, new JSONObject(Buyparams),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        System.out.println("Buy Responce"+response.toString());
+                        pDialog.dismiss();
+
+                        try
+                        {
+                            JSONObject jsonResponse = new JSONObject(String.valueOf(response));
+                            if(jsonResponse.getString("status").equals("true"))
+                            {
+                                SpMerchantRefNo=jsonResponse.getString("SpMerchantRefNo");
+
+                                if(t_payamountvalue.getText().toString().equals("0.00"))
+                                {
+                                    PaymentCompleteParams.put("appkey",MainActivity.appkey);
+                                    PaymentCompleteParams.put("appsecurity",MainActivity.appsecurity);
+                                    PaymentCompleteParams.put("paystatus","success");
+                                    PaymentCompleteParams.put("ResponseCode","0");
+                                    PaymentCompleteParams.put("ResponseMessage","Online Payment Success");
+                                    PaymentCompleteParams.put("PaymentID","");
+                                    PaymentCompleteParams.put("MerchantRefNo",String.valueOf(System.currentTimeMillis()));
+                                    PaymentCompleteParams.put("paymenttype","Online Payment");
+                                    PaymentCompleteParams.put("totalamount",t_payamountvalue.getText().toString());
+                                    PaymentCompleteParams.put("transactionid",String.valueOf(System.currentTimeMillis()));
+                                    PaymentCompleteParams.put("user_id",userID);
+                                    PaymentCompleteParams.put("paymentmode_id","app-"+String.valueOf(System.currentTimeMillis()));
+                                    PaymentCompleteParams.put("PaymentMode","Online Payment");
+                                    PaymentCompleteParams.put("uniquedevice",android_id);
+                                    PaymentCompleteParams.put("SpMerchantRefNo",SpMerchantRefNo);
+                                    Call_afterpayment();
+                                }else
+                                {
+                                    callInstamojoPay(email,phone,t_payamountvalue.getText().toString(),"DC BOOKS",name);
+                                }
+
+                            }
+
+
+                        }
+                        catch (NullPointerException e)
+                        {
+                            e.printStackTrace();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                pDialog.dismiss();
+                System.out.println("Error Responce---> "+error.toString());
+
+            }
+        });
+        AppController.getInstance().addToRequestQueue(jsonObjReq,
+                "jobj_req");
+    }
+    public void Call_afterpayment()
+    {
+        final SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Loading");
+        pDialog.setCancelable(true);
+        pDialog.show();
+
+        System.out.println("Buy afterpayment"+new JSONObject(PaymentCompleteParams));
+
+         jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                Afterpayment_url, new JSONObject(PaymentCompleteParams),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        System.out.println("Buy afterpayment"+response.toString());
+                        pDialog.dismiss();
+
+                        try
+                        {
+                            JSONObject jsonResponse = new JSONObject(String.valueOf(response));
+                            if(jsonResponse.getString("status").equals("true"))
+                            {
+                               Call_ClearCart();
+
+                                Intent in=new Intent(OrderSummary.this,TransactionActivity.class);
+                                in.putExtra("State","Success");
+                                in.putExtra("Amount",t_payamountvalue.getText().toString());
+                                startActivity(in);
+                            }else
+                            {
+                                Intent in=new Intent(OrderSummary.this,TransactionActivity.class);
+                                in.putExtra("State","Failed");
+                                in.putExtra("Amount",t_payamountvalue.getText().toString());
+                                startActivity(in);
+                            }
+
+                        }
+                        catch (NullPointerException e)
+                        {
+                            e.printStackTrace();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                pDialog.dismiss();
+                System.out.println("Error Responce---> "+error.toString());
+
+            }
+        });
+
+        jsonObjReq.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        AppController.getInstance().addToRequestQueue(jsonObjReq,
+                "jobj_req");
+    }
+    public void Call_ClearCart()
+    {
+
+        System.out.println("Buy params"+new JSONObject(Buyparams));
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                Clear_cart, new JSONObject(ClearCartparams),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        System.out.println("Buy Responce"+response.toString());
+
+                        }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                System.out.println("Error Responce---> "+error.toString());
+
+            }
+        });
+        AppController.getInstance().addToRequestQueue(jsonObjReq,
+                "jobj_req");
     }
     public void Call_AddresList()
     {
@@ -256,6 +639,87 @@ public class OrderSummary extends AppCompatActivity {
 
 
                     }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                pDialog.dismiss();
+                System.out.println("Error Responce---> "+error.toString());
+
+            }
+        });
+        AppController.getInstance().addToRequestQueue(jsonObjReq,
+                "jobj_req");
+    }
+
+    public void call_applyVoucher()
+    {
+        final SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Loading");
+        pDialog.setCancelable(true);
+        pDialog.show();
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                voucherurl, new JSONObject(VoucherParams),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        System.out.println("Responce"+response.toString());
+                        pDialog.dismiss();
+
+                        te_pin.getText().clear();
+                        te_vouchercode.getText().clear();
+
+                        try {
+                            JSONObject jsonResponse = new JSONObject(String.valueOf(response));
+
+                            if(jsonResponse.getString("status").equals("true"))
+                            {
+
+                                voucheramount=jsonResponse.getString("amount");
+                                DecimalFormat df = new DecimalFormat("#0.00");
+                                if(Double.parseDouble(voucheramount)>Double.parseDouble(t_payamountvalue.getText().toString()))
+                                {
+                                    t_payamountvalue.setText("0.00");
+                                    totoalpayamount=totoalpayamount-Double.parseDouble(voucheramount);
+                                }
+                                else
+                                {
+                                    totoalpayamount=totoalpayamount-Double.parseDouble(voucheramount);
+                                    t_payamountvalue.setText(String.valueOf(df.format(totoalpayamount)));
+                                }
+
+                                te_pin.getText().clear();
+                                te_vouchercode.getText().clear();
+
+
+                                new SweetAlertDialog(OrderSummary.this, SweetAlertDialog.SUCCESS_TYPE)
+                                        .setTitleText("Applied gift voucher!")
+                                        .show();
+                            }
+                            else
+                            {
+                                new SweetAlertDialog(OrderSummary.this, SweetAlertDialog.ERROR_TYPE)
+                                        .setTitleText("Failed!")
+                                        .setContentText(jsonResponse.getString("message"))
+                                        .show();
+
+                            }
+
+
+
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+
+                        } catch (NullPointerException e)
+                        {
+                            e.printStackTrace();
+
+                        }
+
+                        }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -440,10 +904,11 @@ public class OrderSummary extends AppCompatActivity {
                             DeliveryParams.put("appkey",MainActivity.appkey);
                             DeliveryParams.put("appsecurity",MainActivity.appsecurity);
                             DeliveryParams.put("id",selectaddressid);
-                            DeliveryParams.put("totalproductweight",getIntent().getExtras().getString("Weight"));
+                            DeliveryParams.put("totalproductweight",totalweight);
+                            DeliveryCharge();
 
                             System.out.println("Responce"+getIntent().getExtras().getString("Weight"));
-                            DeliveryCharge();
+
                         }
                         else
                         {
@@ -452,8 +917,19 @@ public class OrderSummary extends AppCompatActivity {
                             t_deliverycharge.setVisibility(View.GONE);
                             t_deliverychargevalue.setVisibility(View.GONE);
                             DecimalFormat df = new DecimalFormat("#0.00");
-                            t_payamountvalue.setText(String.valueOf(df.format(Double.parseDouble(t_subtotalvalue.getText().toString()))));
-                        }
+
+                            totoalpayamount=totoalpayamount-Delivery_charge;
+
+                            if(totoalpayamount>0)
+                            {
+                                t_payamountvalue.setText(String.valueOf(df.format(totoalpayamount)));
+                            }
+                            else
+                            {
+                                t_payamountvalue.setText("0.00");
+                            }
+
+                            }
                     }
                 });
 
@@ -514,30 +990,38 @@ public class OrderSummary extends AppCompatActivity {
 
                         try {
                             JSONObject jsonResponse = new JSONObject(String.valueOf(response));
+                            phone=jsonResponse.getString("mobile");
+                            email=jsonResponse.getString("email");
+                            name=jsonResponse.getString("name");
+                            totalweight=jsonResponse.getString("totalproductweight");
+
                             JSONArray jsonMain = jsonResponse.getJSONArray("Appordersummarytview");
                             int lengthJsonArr = jsonMain.length();
                             for(int i=0; i < lengthJsonArr; i++) {
 
                                 JSONObject jsonChild = jsonMain.getJSONObject(i);
 
+                                cart_id=jsonChild.getString("mycartId");
+
                                 OrderID.add(jsonChild.getString("id"));
                                 OrderItemName.add(jsonChild.getString("title"));
                                 OrderQty.add(jsonChild.getString("productquantity"));
                                 OrderItemPrice.add(jsonChild.getString("orginalsellingprice"));
-                                OrderItemImages.add("http://athira-pc:8080/dcbooks/"+jsonChild.getString("image"));
+                                OrderItemImages.add("http://dcbookstore.tk/"+jsonChild.getString("image"));
 
 
                                 DecimalFormat df = new DecimalFormat("#0.00");
 
+                                //total_amountpaying=String.valueOf(df.format(Double.parseDouble(jsonChild.getString("totalpayamount"))));
                                 t_payamountvalue.setText(String.valueOf(df.format(Double.parseDouble(jsonChild.getString("totalpayamount")))));
+                                totoalpayamount=Double.parseDouble(jsonChild.getString("totalpayamount"));
                                 t_subtotalvalue.setText(String.valueOf(df.format(Double.parseDouble(jsonChild.getString("subtotalproduct")))));
 
 
                                 ItemData itemsData = new ItemData(OrderID.get(i), OrderItemName.get(i),OrderQty.get(i),OrderItemImages.get(i),OrderItemPrice.get(i));
                                 arraylist2.add(itemsData);
 
-
-                            }
+                                }
                         } catch (JSONException e) {
                             e.printStackTrace();
 
@@ -546,6 +1030,8 @@ public class OrderSummary extends AppCompatActivity {
                             e.printStackTrace();
 
                         }
+
+
                         rlv_orderitems.setLayoutManager(new LinearLayoutManager(OrderSummary.this));
                         mAdapter2 = new MyAdapter2(OrderSummary.this, arraylist2);
                         rlv_orderitems.setAdapter(mAdapter2);
@@ -748,6 +1234,8 @@ public class OrderSummary extends AppCompatActivity {
         pDialog.setCancelable(true);
         pDialog.show();
 
+        System.out.println("wowwwwwwwwww "+DeliveryParams.toString());
+
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 deliverycharge_url, new JSONObject(DeliveryParams),
                 new Response.Listener<JSONObject>() {
@@ -759,17 +1247,25 @@ public class OrderSummary extends AppCompatActivity {
                         try {
                             DecimalFormat df = new DecimalFormat("#0.00");
 
+                            deliverycharge=response.getString("Delivercharge");
+
                             t_deliverychargevalue.setText(String.valueOf(df.format(Double.parseDouble(response.getString("Delivercharge")))));
 
-                            double payamount;
-                            double deliverycharge;
-                            double totalpayamount;
-
-                            payamount=Double.parseDouble(t_subtotalvalue.getText().toString());
+                            double deliverycharge=0;
+                            Delivery_charge=Double.parseDouble(response.getString("Delivercharge"));
                             deliverycharge=Double.parseDouble(t_deliverychargevalue.getText().toString());
-                            totalpayamount=payamount+deliverycharge;
+                            totoalpayamount=totoalpayamount+deliverycharge;
 
-                            t_payamountvalue.setText(String.valueOf(df.format(totalpayamount)));
+                            if(totoalpayamount>0)
+                            {
+                                t_payamountvalue.setText(String.valueOf(df.format(totoalpayamount)));
+                            }
+                            else
+                            {
+                                t_payamountvalue.setText("0.00");
+                            }
+
+
 
                         }catch (JSONException E)
                         {
@@ -784,7 +1280,7 @@ public class OrderSummary extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // pDialog.dismiss();
+                 pDialog.dismiss();
                 System.out.println("Error Responce---> "+error.toString());
 
             }
@@ -810,6 +1306,19 @@ public class OrderSummary extends AppCompatActivity {
             AddressParams.put("appsecurity",MainActivity.appsecurity);
             AddressParams.put("user_id",userID);
             Call_AddresList();
+
+
+            if(!selectaddressid.equals(""))
+            {
+                DeliveryParams.put("appkey",MainActivity.appkey);
+                DeliveryParams.put("appsecurity",MainActivity.appsecurity);
+                DeliveryParams.put("id",selectaddressid);
+                DeliveryParams.put("totalproductweight",totalweight);
+                DeliveryCharge();
+            }
+
+
+
 
 
 

@@ -15,6 +15,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -30,15 +31,29 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.security.ProviderInstaller;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
+
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+
+import app.com.dc_books.Expand.ShopByCategory;
 
 
 public class MainActivity extends AppCompatActivity{
@@ -64,7 +79,14 @@ public class MainActivity extends AppCompatActivity{
     public static String appkey="aec2a0b15161ae445865b32bbefef972";
     public static String appsecurity="928e6af859edef918313aac98d5d48ee";
 
+    public static int Brand_Type;
+    public static int Brand_Type_Flag;
+    public static String languageType;
 
+    Spinner sp_languagetype;
+    String [] Languages={"Malayalam Books","English Books"};
+    FragmentManager fragmentManager;
+    Fragment home;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +103,29 @@ public class MainActivity extends AppCompatActivity{
         framelayout = findViewById(R.id.framelayout);
         mainLayout= findViewById(R.id.mainlayout);
         img_account=findViewById(R.id.account);
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // only for gingerbread and newer versions
+        }
+        else
+        {
+            try {
+                ProviderInstaller.installIfNeeded(getApplicationContext());
+                SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+                sslContext.init(null, null, null);
+                SSLEngine engine = sslContext.createSSLEngine();
+            } catch (GooglePlayServicesRepairableException e) {
+                e.printStackTrace();
+            } catch (GooglePlayServicesNotAvailableException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (KeyManagementException e) {
+                e.printStackTrace();
+            }
+        }
+
+
 
         font = Typeface.createFromAsset(getAssets(),"fonts/Montserrat-SemiBold.ttf");
 
@@ -105,6 +150,7 @@ public class MainActivity extends AppCompatActivity{
 
 
         Setup_navigation();
+        setup_navigation_spinnerview();
 
 
 
@@ -122,7 +168,14 @@ public class MainActivity extends AppCompatActivity{
                 Intent in = new Intent(MainActivity.this, ProductListing.class);
                 in.putExtra("Keyword", query);
                 in.putExtra("Identifier", "0");
+                in.putExtra("Identifier", "0");
                 startActivity(in);
+
+                rtv_searchlayout.setVisibility(View.GONE);
+                SearchlayoutVisibleState = 0;
+                et_search.clearFocus();
+                et_search.setQuery("", false);
+
 
                 return false;
             }
@@ -132,15 +185,66 @@ public class MainActivity extends AppCompatActivity{
 
 
 
-        FragmentManager fragmentManager = getFragmentManager();
-        Fragment home = new Home();
+      /*  fragmentManager = getFragmentManager();
+        home = new Home();
         fragmentManager.beginTransaction().replace(R.id.framelayout, home).commit();
+        Brand_Type=1;*/
 
 
 
 
 
 
+
+    }
+    // setup navigation spinner view
+    private void setup_navigation_spinnerview()
+    {
+        View headerview = navigationView.getHeaderView(0);
+        sp_languagetype=headerview.findViewById(R.id.language);
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, Languages);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sp_languagetype.setAdapter(dataAdapter);
+
+        sp_languagetype.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                ((TextView) view).setTextColor(Color.WHITE);
+
+                try {
+
+                    if (i == 0) {
+                        languageType = "1";
+                        Brand_Type = 1;
+                        Brand_Type_Flag = Brand_Type;
+                        fragmentManager = getFragmentManager();
+                        home = new Home();
+                        fragmentManager.beginTransaction().replace(R.id.framelayout, home).commit();
+                        mDrawerLayout.closeDrawers();
+                    } else {
+                        languageType = "2";
+                        Brand_Type = 1;
+                        Brand_Type_Flag = Brand_Type;
+                        fragmentManager = getFragmentManager();
+                        home = new Home();
+                        fragmentManager.beginTransaction().replace(R.id.framelayout, home).commit();
+                        mDrawerLayout.closeDrawers();
+                    }
+                }catch (IllegalStateException e)
+                {
+
+                }
+
+
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
     }
 
@@ -193,16 +297,20 @@ public class MainActivity extends AppCompatActivity{
                 t_login.setText("Login");
                 img_account.setImageResource(R.mipmap.topiconaccount);
             } else {
-                t_name.setText(Name);
-                t_login.setText("Log out");
+                t_name.setText("Hi "+Name);
+                t_login.setText("");
                 img_account.setImageResource(R.mipmap.topicon04);
+
+
+
 
                     Picasso.with(MainActivity.this)
                             .load(user_image)
-                            .placeholder(R.mipmap.avtar)
                             .error(R.mipmap.avtar)
                             .transform(new CircleTransform())
                             .into(profileimage);
+
+
 
 
             }
@@ -282,14 +390,19 @@ public class MainActivity extends AppCompatActivity{
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        fragmentManager = getFragmentManager();
+                        Fragment home = new Home();
                         menuItem.setChecked(true);
                         switch (menuItem.getItemId()) {
                             case R.id.nav_home:
-
-                                FragmentManager fragmentManager = getFragmentManager();
-                                Fragment home = new Home();
+                                Brand_Type=1;
+                                Brand_Type_Flag=Brand_Type;
                                 fragmentManager.beginTransaction().replace(R.id.framelayout, home).commit();
-
+                                break;
+                            case R.id.giftandtoys:
+                                Brand_Type=2;
+                                Brand_Type_Flag=Brand_Type;
+                                fragmentManager.beginTransaction().replace(R.id.framelayout, home).commit();
                                 break;
                             case R.id.shop_category:
                                 Intent in=new Intent(MainActivity.this,ShopByCategory.class);
@@ -339,6 +452,48 @@ public class MainActivity extends AppCompatActivity{
                                 Intent intent05=new Intent(MainActivity.this,ShippingAndPrivacy.class);
                                 startActivity(intent05);
                                 break;
+                            case R.id.preorder:
+                                Brand_Type=6;
+                                Intent i=new Intent(MainActivity.this,Bundle_offer.class);
+                                i.putExtra("CatID","0");
+                                i.putExtra("CatName","Pre order");
+                                i.putExtra("Identifier","1");
+                                startActivity(i);
+                                break;
+                            case R.id.top10:
+                                Brand_Type=7;
+                                Intent top100=new Intent(MainActivity.this,Bundle_offer.class);
+                                top100.putExtra("CatID","0");
+                                top100.putExtra("CatName","DC Top 100");
+                                top100.putExtra("Identifier","1");
+                                startActivity(top100);
+                                break;
+
+                            case R.id.bundle:
+                                Brand_Type=4;
+                                Intent bundle=new Intent(MainActivity.this,Bundle_offer.class);
+                                bundle.putExtra("CatID","0");
+                                bundle.putExtra("CatName","Bundle offers");
+                                bundle.putExtra("Identifier","1");
+                                startActivity(bundle);
+                                break;
+                            case R.id.award_winners:
+                                Brand_Type=5;
+                                Intent award_winners=new Intent(MainActivity.this,Bundle_offer.class);
+                                award_winners.putExtra("CatID","0");
+                                award_winners.putExtra("CatName","Award winners");
+                                award_winners.putExtra("Identifier","1");
+                                startActivity(award_winners);
+                                break;
+                            case R.id.email_gift_voucher:
+                                Brand_Type=8;
+                                Intent emailgiftvoucher=new Intent(MainActivity.this,Email_Giftvoucher_List.class);
+                                emailgiftvoucher.putExtra("CatID","0");
+                                emailgiftvoucher.putExtra("CatName","Email Gift Voucher");
+                                emailgiftvoucher.putExtra("Identifier","1");
+                                startActivity(emailgiftvoucher);
+                                break;
+
 
 
                         }

@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -53,8 +54,8 @@ import me.relex.circleindicator.CircleIndicator;
 
 public class ProductDetails extends AppCompatActivity {
 
-    String ProductDetails_Url="http://athira-pc:8080/dcbooks/api/product/details";
-    String Reviewproduct_Url="http://athira-pc:8080/dcbooks/api/productreview/submit";
+    String ProductDetails_Url="https://dcbookstore.tk/api/product/details";
+    String Reviewproduct_Url="https://dcbookstore.tk/api/productReview/submit";
     String Mywishlist_Url;
     Map<String, String> ProductParams = new HashMap<String, String>();
     Map<String, String> ProductReviewParams = new HashMap<String, String>();
@@ -94,14 +95,14 @@ public class ProductDetails extends AppCompatActivity {
     ImageButton add;
     CardView cardView2,writereview_cardview;
 
-    String bookname,author,category,isbn,binding,publishingdate,publisher,edition,
+    String bookname,author,category,isbn,binding,publishingdate,publisher,edition,multimedia,
             numberofpages,language,stockavilable,delivery,already_reviewed="false";
     
     TextView t_bookname,t_author,t_category,t_isbn,t_binding,t_publishingdate,t_publisher,t_edition,
             t_numberofpages,t_language,t_stockavilable,t_delivery,t_authorby,t_writereviewheading,
-            t_productnameheading,t_productnaemreview,t_yourrating;
+            t_productnameheading,t_productnaemreview,t_yourrating,t_mutimedia;
 
-    TextView T_book,T_author,T_category,T_isbn,T_binding,T_Pubdate,T_pub,T_edition,T_nopages,T_language;
+    TextView T_book,T_author,T_category,T_isbn,T_binding,T_Pubdate,T_pub,T_edition,T_nopages,T_language,T_mutimedia;
 
     TextInputLayout ti_title,ti_message;
     TextInputEditText te_title,te_message;
@@ -111,7 +112,12 @@ public class ProductDetails extends AppCompatActivity {
 
     Button b_ebook,b_audiobook,b_paperback,b_usedbooks,b_hardcover;
 
-    String paperbackid,usedbookid,hardcoverid;
+    String paperbackid,usedbookid,hardcoverid,e_book,audiobooklink;
+    String prepublicationid="",offerid="",product_type;
+
+    TextView t_titleofproductheading,t_productdec;
+
+    TextView t_combooffer;
 
 
 
@@ -142,6 +148,9 @@ public class ProductDetails extends AppCompatActivity {
         t_heading_productdetails=findViewById(R.id.textView10);
         t_price=findViewById(R.id.textView7);
 
+        t_titleofproductheading=findViewById(R.id.textView11);
+        t_productdec=findViewById(R.id.textView46);
+
 
         t_bookname=findViewById(R.id.bookname);
         t_author=findViewById(R.id.author);
@@ -160,6 +169,8 @@ public class ProductDetails extends AppCompatActivity {
         t_productnameheading=findViewById(R.id.productnameheading);
         t_productnaemreview=findViewById(R.id.productnaemreview);
         t_yourrating=findViewById(R.id.yourrating);
+        t_combooffer=findViewById(R.id.textView9);
+        t_mutimedia=findViewById(R.id.multimedia);
 
         T_book=findViewById(R.id.T_book);
         T_author=findViewById(R.id.T_author);
@@ -171,6 +182,7 @@ public class ProductDetails extends AppCompatActivity {
         T_edition=findViewById(R.id.T_edition);
         T_nopages=findViewById(R.id.T_nopages);
         T_language=findViewById(R.id.T_language);
+        T_mutimedia=findViewById(R.id.T_multimedia);
 
         ti_title=findViewById(R.id.ti_title);
         ti_message=findViewById(R.id.ti_message);
@@ -201,6 +213,7 @@ public class ProductDetails extends AppCompatActivity {
         img_account=findViewById(R.id.account);
         cardView2=findViewById(R.id.cardview2);
         cardView2.setVisibility(View.INVISIBLE);
+        t_combooffer.setVisibility(View.GONE);
 
 
 
@@ -249,6 +262,9 @@ public class ProductDetails extends AppCompatActivity {
         t_productnameheading.setTypeface(font);
         t_productnaemreview.setTypeface(font);
         t_yourrating.setTypeface(font);
+        t_productdec.setTypeface(font);
+        t_mutimedia.setTypeface(font);
+
 
         T_book.setTypeface(font3);
         T_author.setTypeface(font3);
@@ -259,6 +275,8 @@ public class ProductDetails extends AppCompatActivity {
         T_pub.setTypeface(font3);
         T_edition.setTypeface(font3);
         T_nopages.setTypeface(font3);
+        T_mutimedia.setTypeface(font3);
+        t_combooffer.setTypeface(font3);
         T_language.setTypeface(font3);
 
         b_ebook.setTypeface(font3);
@@ -266,6 +284,11 @@ public class ProductDetails extends AppCompatActivity {
         b_paperback.setTypeface(font3);
         b_usedbooks.setTypeface(font3);
         b_hardcover.setTypeface(font3);
+        t_titleofproductheading.setTypeface(font3);
+
+
+        b_ebook.setVisibility(View.GONE);
+        b_audiobook.setVisibility(View.GONE);
 
 
 
@@ -281,7 +304,7 @@ public class ProductDetails extends AppCompatActivity {
         ProductParams.put("appsecurity",appsecurity);
         ProductParams.put("product_id",product_id);
         ProductParams.put("user_id", userID);
-        ProductParams.put("is_used_book", "0");
+        ProductParams.put("producttype", "1");
 
 
 
@@ -307,6 +330,11 @@ public class ProductDetails extends AppCompatActivity {
                 in.putExtra("Identifier","0");
                 startActivity(in);
 
+                rtv_searchlayout.setVisibility(View.GONE);
+                SearchlayoutVisibleState = 0;
+                et_search.clearFocus();
+                et_search.setQuery("", false);
+
                 return false;
             }
 
@@ -319,6 +347,7 @@ public class ProductDetails extends AppCompatActivity {
                 WishParams.put("appkey",appkey);
                 WishParams.put("appsecurity",appsecurity);
                 WishParams.put("product_id",product_id);
+                WishParams.put("producttype",String.valueOf(MainActivity.Brand_Type));
                 WishParams.put("user_id", userID);
 
 
@@ -326,11 +355,11 @@ public class ProductDetails extends AppCompatActivity {
                 if(!userID.equals("")) {
 
                     if (WISHLIST_STATE == 0) {
-                        Mywishlist_Url = "http://athira-pc:8080/dcbooks/api/wishlist/add";
+                        Mywishlist_Url = "https://dcbookstore.tk/api/wishlist/add";
                         ib_wishlist.setImageResource(R.mipmap.heartfill);
                         WISHLIST_STATE = 1;
                     } else {
-                        Mywishlist_Url = "http://athira-pc:8080/dcbooks/api/wishlist/remove";
+                        Mywishlist_Url = "https://dcbookstore.tk/api/wishlist/remove";
                         ib_wishlist.setImageResource(R.mipmap.heart);
                         WISHLIST_STATE = 0;
                     }
@@ -351,13 +380,13 @@ public class ProductDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                ProductParams.put("is_used_book", "0");
+                ProductParams.put("producttype","1");
                 ProductParams.put("product_id",paperbackid);
                 b_paperback.setBackgroundResource(R.drawable.coveringlayout_selection);
                 b_usedbooks.setBackgroundResource(R.drawable.coveringlayout_background);
                 b_hardcover.setBackgroundResource(R.drawable.coveringlayout_background);
 
-                CallProductDetails();
+                 CallProductDetails();
             }
         });
 
@@ -365,7 +394,7 @@ public class ProductDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                ProductParams.put("is_used_book", "1");
+                ProductParams.put("producttype","3");
                 ProductParams.put("product_id",usedbookid);
                 b_paperback.setBackgroundResource(R.drawable.coveringlayout_background);
                 b_usedbooks.setBackgroundResource(R.drawable.coveringlayout_selection);
@@ -379,12 +408,34 @@ public class ProductDetails extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                ProductParams.put("is_used_book", "0");
+                ProductParams.put("producttype","1");
                 ProductParams.put("product_id",hardcoverid);
                 b_paperback.setBackgroundResource(R.drawable.coveringlayout_background);
                 b_usedbooks.setBackgroundResource(R.drawable.coveringlayout_background);
                 b_hardcover.setBackgroundResource(R.drawable.coveringlayout_selection);
                 CallProductDetails();
+            }
+        });
+
+        b_ebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse(e_book));
+                startActivity(intent);
+
+            }
+        });
+
+        b_audiobook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse(audiobooklink));
+                startActivity(intent);
+
             }
         });
 
@@ -459,6 +510,9 @@ public class ProductDetails extends AppCompatActivity {
         in.putExtra("ProductID",product_id);
         in.putExtra("Qty",stockproductqty);
         in.putExtra("OfferPrice",sellingprice);
+        in.putExtra("Producttype",product_type);
+        in.putExtra("prepublicationid",prepublicationid);
+        in.putExtra("offerid",offerid);
         startActivity(in);
 
     }
@@ -493,15 +547,15 @@ public class ProductDetails extends AppCompatActivity {
         pDialog.setTitleText("Loading");
         pDialog.setCancelable(true);
         pDialog.show();
-
-        System.out.println("json "+new JSONObject(ProductParams));
+        BannerImage.clear();
+        System.out.println("wowwwwwwwwwwww "+new JSONObject(ProductParams));
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 ProductDetails_Url, new JSONObject(ProductParams),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        System.out.println("Responce---> "+response.toString());
+                        System.out.println("Responce--->"+response.toString());
                       // pDialog.dismiss();
                         add.setEnabled(true);
 
@@ -518,7 +572,6 @@ public class ProductDetails extends AppCompatActivity {
                                 String code=jsonChild.getString("code");
                                 String actualprice=jsonChild.getString("actual_price");
                                 isbn=jsonChild.getString("isbn");
-                                //stock=jsonChild.getString("stock");
                                 binding=jsonChild.getString("binding");
                                 language=jsonChild.getString("language");
                                 author=jsonChild.getString("author");
@@ -531,9 +584,14 @@ public class ProductDetails extends AppCompatActivity {
                                 delivery=jsonChild.getString("delivered_in");
                                 category=jsonChild.getString("category");
                                 already_reviewed=jsonChild.getString("reviewed_already");
+                                multimedia=jsonChild.getString("reviewed_already");
                                 String rating=jsonChild.getString("average_rating");
                                 String wishlist=jsonChild.getString("wishlist");
                                 String stock_status=jsonChild.getString("stock_status");
+                                e_book=jsonChild.getString("ebooklink");
+                                audiobooklink=jsonChild.getString("audiobooklink");
+                                product_type=jsonChild.getString("producttype");
+                                t_productdec.setText(jsonChild.getString("summary"));
                                 if(wishlist.equals("true"))
                                 {
                                     ib_wishlist.setImageResource(R.mipmap.heartfill);
@@ -566,25 +624,51 @@ public class ProductDetails extends AppCompatActivity {
                                 t_numberofpages.setText(numberofpages);
                                 t_language.setText(language);
                                 t_stockavilable.setText(stockavilable);
-                                t_delivery.setText(delivery);
+                                t_delivery.setText("Delivered in "+delivery);
                                 t_authorby.setText("By : "+author);
                                 t_category.setText(category);
                                 t_productnaemreview.setText(bookname);
                                 ratingBar.setRating(Float.parseFloat(rating));
+
+                                if(multimedia.equals("true"))
+                                {
+                                    t_mutimedia.setText("Yes");
+                                }else
+                                {
+                                    t_mutimedia.setText("No");
+                                }
+
                                 //set enable set false
                                 ratingBar.setIndicator(true);
                                 DecimalFormat df = new DecimalFormat("#0.00");
                                 t_productname.setText(bookname);
                                 t_actualprice.setText(String.valueOf(df.format(Double.parseDouble(actualprice))));
                                 t_sellingprice.setText("Sale: Rs. "+String.valueOf(df.format(Double.parseDouble(sellingprice))));
-                                BannerImage.add("http://athira-pc:8080/dcbooks/"+image);
-                                Glide.with(ProductDetails.this)
-                                        .load(badgeimage).into(badgeview);
+                                BannerImage.add("http://dcbookstore.tk/"+image);
+
                                 //Already Reviewed
                                 if(already_reviewed.equals("true"))
                                 {
                                     writereview_cardview.setVisibility(View.GONE);
                                 }
+
+                                // b_ebook button text set
+                                if(e_book.equals(""))
+                                {
+                                  b_ebook.setVisibility(View.GONE);
+                                }
+                                else
+                                {
+                                    b_ebook.setVisibility(View.VISIBLE);
+                                }
+                                if(audiobooklink.equals(""))
+                                {
+                                    b_audiobook.setVisibility(View.GONE);
+                                }else
+                                {
+                                    b_audiobook.setVisibility(View.VISIBLE);
+                                }
+
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -601,7 +685,7 @@ public class ProductDetails extends AppCompatActivity {
                                 String image=jsonChild.getString("image");
                                 if(!image.equals(""))
                                 {
-                                    BannerImage.add("http://athira-pc:8080/dcbooks/"+image);
+                                    BannerImage.add("http://dcbookstore.tk/"+image);
                                 }
                             }
                         } catch (JSONException e) {
@@ -630,6 +714,9 @@ public class ProductDetails extends AppCompatActivity {
                                 b_paperback.setText("PAPER BACK\n"+paperbacksellingprice);
                                 b_usedbooks.setText("USED BOOKS\n"+usedbook_selling_price);
                                 b_hardcover.setText("HARD COVER\n"+hardcover_selling_price);
+
+
+
 
                                 //Paperback default selection
                                 if(paperback.equals("true"))
@@ -669,13 +756,55 @@ public class ProductDetails extends AppCompatActivity {
                                     b_hardcover.setEnabled(false);
                                 }
 
+                                }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
 
+                        }
+
+                        try {
+                            JSONObject jsonResponse = new JSONObject(String.valueOf(response));
+                            JSONArray jsonMain = jsonResponse.getJSONArray("prepublicationbook");
+                            int lengthJsonArr = jsonMain.length();
+                            for(int i=0; i < lengthJsonArr; i++) {
+                                JSONObject jsonChild = jsonMain.getJSONObject(i);
+                                 prepublicationid=jsonChild.getString("prepublicationid");
 
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
 
                         }
+                        try {
+                            JSONObject jsonResponse = new JSONObject(String.valueOf(response));
+                            JSONArray jsonMain = jsonResponse.getJSONArray("comboofferdetails");
+                            int lengthJsonArr = jsonMain.length();
+                            for(int i=0; i < lengthJsonArr; i++) {
+                                JSONObject jsonChild = jsonMain.getJSONObject(i);
+                                offerid=jsonChild.getString("offerid");
+                                badgeimage=jsonChild.getString("badge");
+
+                                if(jsonChild.getString("offertext").equals(""))
+                                {
+                                    t_combooffer.setVisibility(View.GONE);
+                                }else
+                                {
+                                    t_combooffer.setVisibility(View.VISIBLE);
+                                    t_combooffer.setText(jsonChild.getString("offertext"));
+                                }
+
+
+
+                                Glide.with(ProductDetails.this)
+                                        .load("http://dcbookstore.tk/"+badgeimage).into(badgeview);
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+
+                        }
+
+
 
 
                         CustomPagerAdapter mCustomPagerAdapter = new CustomPagerAdapter(ProductDetails.this,BannerImage);
@@ -769,6 +898,8 @@ public class ProductDetails extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+
+                        System.out.println("hi "+response.toString());
                         pDialog.dismiss();
                         try {
                             JSONObject jsonResponse = new JSONObject(String.valueOf(response));

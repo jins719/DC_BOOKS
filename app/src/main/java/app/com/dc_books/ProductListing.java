@@ -25,6 +25,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -64,20 +66,22 @@ public class ProductListing extends AppCompatActivity {
     SharedPreferences.Editor edit;
     public static final String mp = "";
     Toolbar toolbar;
-    String ip_head = "http://athira-pc:8080/dcbooks";
+    String ip_head = "http://dcbookstore.tk";
     String product_url = ip_head+"/api/product/list_by_category";
-    String wishlist_add_url ="http://athira-pc:8080/dcbooks/api/wishlist/add";
-    String sort_url = ip_head+"admin/services/Appsearchsorting";
-    String wishlist_delete_url ="http://athira-pc:8080/dcbooks/api/wishlist/remove";
+    String wishlist_add_url ="https://dcbookstore.tk/api/wishlist/add";
+    String wishlist_delete_url ="https://dcbookstore.tk/api/wishlist/remove";
+    String sort_url ="https://dcbookstore.tk/api/product/sorting";
 
-    String search_url =ip_head+"admin/services/Apphomesearchlist";
-    String filter_url =ip_head+"admin/services/Appfilterresult";
+
+    String search_url ="https://dcbookstore.tk/api/product/product_search";
+    String filter_url ="https://dcbookstore.tk/api/giftandtoys/attributefilterresult";
     MyAdapter productAdapter;
-    RelativeLayout subToolbar,subToolbarDivider,sortlayout;
+    RelativeLayout subToolbarDivider,sortlayout;
+    LinearLayout subToolbar;
     int SORTLAYOUT_STATE=1;
     TextView t_high_to_low,t_low_to_high,t_relevance;
     ImageView img_high_to_low,img_low_to_high,img_revelance;
-    Typeface font2;
+    Typeface font1,font2;
     ImageButton ib_profile;
     int SearchlayoutVisibleState=0;
     RelativeLayout rtv_searchlayout;
@@ -90,14 +94,18 @@ public class ProductListing extends AppCompatActivity {
     boolean mIsReceiverRegistered = false;
     MyBroadcastReceiver mReceiver = null;
 
-    ImageButton ib_sort;
+    ImageButton ib_sort,filter,iconsearch;
     int ib_SortState=0;
+
+
+    LinearLayout divider_filter_left,divider_sort_right;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_listing);
 
+        font1 = Typeface.createFromAsset(getAssets(),"fonts/Montserrat-SemiBold.ttf");
         font2 = Typeface.createFromAsset(getAssets(),"fonts/Montserrat-Regular.ttf");
 
         Bundle extras = getIntent().getExtras();
@@ -156,6 +164,11 @@ public class ProductListing extends AppCompatActivity {
         img_revelance=findViewById(R.id.imageView11);
         rtv_searchlayout=findViewById(R.id.relativeLayout2);
         ib_sort=findViewById(R.id.ib_sort);
+        filter=findViewById(R.id.ib_filter);
+        iconsearch=findViewById(R.id.topserach);
+        divider_filter_left=findViewById(R.id.divider_filter_left);
+        divider_sort_right=findViewById(R.id.divider_sort_right);
+
         t_relevance.setTypeface(font2);
         t_high_to_low.setTypeface(font2);
         t_low_to_high.setTypeface(font2);
@@ -167,11 +180,30 @@ public class ProductListing extends AppCompatActivity {
         searchIcon.setImageResource(R.mipmap.searchicon);
 
 
-        if(!getIntent().getExtras().getString("CatName").isEmpty())
+        tv_ProductCategory.setTypeface(font1);
+
+
+        try {
+            if (!getIntent().getExtras().getString("CatName").isEmpty()) {
+                tv_ProductCategory.setText(getIntent().getExtras().getString("CatName"));
+            }
+        }catch (Exception e)
         {
-            tv_ProductCategory.setText(getIntent().getExtras().getString("CatName"));
+
         }
 
+        if(MainActivity.Brand_Type!=2)
+        {
+            filter.setVisibility(View.GONE);
+            divider_filter_left.setVisibility(View.GONE);
+            divider_sort_right.setVisibility(View.GONE);
+        }
+        else
+        {
+            filter.setVisibility(View.VISIBLE);
+            divider_filter_left.setVisibility(View.VISIBLE);
+            divider_sort_right.setVisibility(View.VISIBLE);
+        }
 
         et_search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
@@ -188,6 +220,12 @@ public class ProductListing extends AppCompatActivity {
                 in.putExtra("Keyword",query);
                 in.putExtra("Identifier","0");
                 startActivity(in);
+
+                rtv_searchlayout.setVisibility(View.GONE);
+                SearchlayoutVisibleState = 0;
+                et_search.clearFocus();
+                et_search.setQuery("", false);
+
                 if (identifier.equals("0")){
                     finish();
                 }
@@ -203,33 +241,42 @@ public class ProductListing extends AppCompatActivity {
         Log.d("asfda",product_url);
 
         WishlistAddParams.put("user_id", user_id);
-        WishlistAddParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-        WishlistAddParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+        WishlistAddParams.put("appkey", MainActivity.appkey);
+        WishlistAddParams.put("appsecurity", MainActivity.appsecurity);
 
         WishlistDeleteParams.put("user_id", user_id);
-        WishlistDeleteParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-        WishlistDeleteParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+        WishlistDeleteParams.put("appkey", MainActivity.appkey);
+        WishlistDeleteParams.put("appsecurity", MainActivity.appsecurity);
 
-        SortParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-        SortParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+        SortParams.put("appkey", MainActivity.appkey);
+        SortParams.put("appsecurity", MainActivity.appsecurity);
+        SortParams.put("limit","50");
         SortParams.put("category_id",cat_id);
-        SortParams.put("user_id",user_id);
-        FilterParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-        FilterParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+        SortParams.put("value",String.valueOf(MainActivity.Brand_Type));
+        SortParams.put("languagetype",MainActivity.languageType);
+
+
+        FilterParams.put("appkey", MainActivity.appkey);
+        FilterParams.put("appsecurity", MainActivity.appsecurity);
         FilterParams.put("category_id",cat_id);
-        FilterParams.put("attribute_id",attribute_id);
-        FilterParams.put("attributevalue_id",attributevalue_id);
+        FilterParams.put("attributevalue_id",attribute_id);
+        FilterParams.put("attribute_id",attributevalue_id);
         System.out.println("dfjkajfkdsakf"+FilterParams.toString());
 //        MyAdapter productAdapter=new MyAdapter(serviceDemo);
 //        rv_product_listing.setAdapter(productAdapter);
 
         if (identifier.equals("0")){
-            subToolbar.setVisibility(View.GONE);
-            subToolbarDivider.setVisibility(View.GONE);
-            SearchParams.put("keywords", keyword);
+            subToolbar.setVisibility(View.VISIBLE);
+            subToolbarDivider.setVisibility(View.VISIBLE);
+            ib_sort.setVisibility(View.GONE);
+            filter.setVisibility(View.GONE);
+            iconsearch.setVisibility(View.GONE);
+            SearchParams.put("keyword", keyword);
             Log.d("sdakfjskla",keyword);
-            SearchParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-            SearchParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+            SearchParams.put("appkey", MainActivity.appkey);
+            SearchParams.put("appsecurity", MainActivity.appsecurity);
+            SearchParams.put("value", String.valueOf(MainActivity.Brand_Type));
+            SearchParams.put("languagetype",MainActivity.languageType);
             isNetworkConnected();
             if(NETCONNECTION==1)
             {
@@ -242,7 +289,7 @@ public class ProductListing extends AppCompatActivity {
                         .setContentText("Internet not available, Check your internet connectivity and try again")
                         .show();
             }
-        }else if(identifier.equals("10")){
+            }   else if(identifier.equals("10")){
             subToolbar.setVisibility(View.GONE);
             subToolbarDivider.setVisibility(View.GONE);
             isNetworkConnected();
@@ -257,13 +304,17 @@ public class ProductListing extends AppCompatActivity {
                         .setContentText("Internet not available, Check your internet connectivity and try again")
                         .show();
             }
-        }else{
+            }
+            else
+                {
             subToolbar.setVisibility(View.VISIBLE);
             subToolbarDivider.setVisibility(View.VISIBLE);
             ProductParams.put("category_id", cat_id);
             ProductParams.put("limit", "50");
             ProductParams.put("appkey", MainActivity.appkey);
+            ProductParams.put("value", String.valueOf(MainActivity.Brand_Type));
             ProductParams.put("appsecurity", MainActivity.appsecurity);
+            ProductParams.put("languagetype", MainActivity.languageType);
             isNetworkConnected();
             if(NETCONNECTION==1)
             {
@@ -291,6 +342,8 @@ public class ProductListing extends AppCompatActivity {
                     ib_SortState=0;
                     sortlayout.setVisibility(View.GONE);
                 }
+
+
                 }
         });
 
@@ -301,10 +354,12 @@ public class ProductListing extends AppCompatActivity {
                 img_high_to_low.setVisibility(View.INVISIBLE);
                 img_revelance.setVisibility(View.INVISIBLE);
                 ib_SortState=0;
-                SortParams.put("sortamount","2");
+                SortParams.put("sortid","2");
+                //SortParams.put("sortamount","2");
                 System.out.println("sorkdjfkasjdfk"+SortParams.toString());
                 sortlayout.setVisibility(View.GONE);
                 SORTLAYOUT_STATE=1;
+
                 Sort();
 
                 return false;
@@ -317,10 +372,11 @@ public class ProductListing extends AppCompatActivity {
                 img_high_to_low.setVisibility(View.VISIBLE);
                 img_revelance.setVisibility(View.INVISIBLE);
                 ib_SortState=0;
-                SortParams.put("sortamount","1");
+               // SortParams.put("sortamount","1");
                 System.out.println("sorkdjfkasjdfk"+SortParams.toString());
                 sortlayout.setVisibility(View.GONE);
                 SORTLAYOUT_STATE=1;
+                SortParams.put("sortid","3");
                 Sort();
 
                 return false;
@@ -336,6 +392,8 @@ public class ProductListing extends AppCompatActivity {
                 ib_SortState=0;
                 SORTLAYOUT_STATE=1;
                 adpaterRefresh="1";
+
+                SortParams.put("sortid","1");
                 Product();
 
                 return false;
@@ -444,6 +502,7 @@ public class ProductListing extends AppCompatActivity {
             TextView tvProduct,tvProdActualPric,tvProdOfferPric;
             ImageButton ibLikeButton;
             ImageView ivMainImage,ivBadge;
+            RatingBar ivratingbar;
 
             //            public TextView txtFooter;
             public View layout;
@@ -457,13 +516,24 @@ public class ProductListing extends AppCompatActivity {
                 ibLikeButton=v.findViewById(R.id.ib_like);
                 ivMainImage=v.findViewById(R.id.iv_main_img);
                 ivBadge=v.findViewById(R.id.iv_badge);
+                ivratingbar=v.findViewById(R.id.ratingBar);
 //                txtFooter = (TextView) v.findViewById(R.id.secondLine);
                 v.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent in =new Intent(ProductListing.this,ProductDetails.class);
-                        in.putExtra("ProdID",values.get(getAdapterPosition()).getProdId());
-                        startActivity(in);
+
+                        if(MainActivity.Brand_Type==2)
+                        {
+                            Intent in =new Intent(ProductListing.this,GiftandToys.class);
+                            in.putExtra("ProdID",values.get(getAdapterPosition()).getProdId());
+                            startActivity(in);
+                        }else
+                        {
+                            Intent in =new Intent(ProductListing.this,ProductDetails.class);
+                            in.putExtra("ProdID",values.get(getAdapterPosition()).getProdId());
+                            startActivity(in);
+                        }
+
                     }
                 });
             }
@@ -515,9 +585,10 @@ public class ProductListing extends AppCompatActivity {
             String mainImgUrl = values.get(position).getMainImg();
             String prodActPric = values.get(position).getActualPric();
             String prodOfferPric = values.get(position).getOfferPric();
-            String badgeImgUrl = ip_head+values.get(position).getBadge();
+            String badgeImgUrl = values.get(position).getBadge();
             final String prodId = values.get(position).getProdId();
             final String wishStatus = values.get(position).getWishStatus();
+
 
             holder.tvProduct.setText(prodTitle);
             holder.tvProduct.setTypeface(custom_regular);
@@ -526,6 +597,8 @@ public class ProductListing extends AppCompatActivity {
             holder.tvProdActualPric.setPaintFlags(holder.tvProdActualPric.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
             holder.tvProdOfferPric.setText("Rs. "+getDecimal(prodOfferPric));
             holder.tvProdOfferPric.setTypeface(custom_bold);
+            holder.ivratingbar.setRating(Float.parseFloat(values.get(position).getaveragerating()));
+
             if(wishStatus.equals("true")){
                 holder.ibLikeButton.setImageResource(R.mipmap.heartfill);
             }else {
@@ -547,16 +620,15 @@ public class ProductListing extends AppCompatActivity {
                     if(NETCONNECTION==1)
                     {
                         if (login_status.equals("success")) {
-                            if (wishStatus.equals("1")) {
+                            if (wishStatus.equals("true")) {
                                 WishlistDeleteParams.put("product_id", prodId);
+                                WishlistDeleteParams.put("producttype",String.valueOf(MainActivity.Brand_Type));
                                 holder.ibLikeButton.setImageResource(R.mipmap.heart);
-                                ProductArray.get(position).setWishStatus("0");
                                 WishlistDelete(position);
                             } else {
                                 WishlistAddParams.put("product_id", prodId);
+                                WishlistAddParams.put("producttype",String.valueOf(MainActivity.Brand_Type));
                                 holder.ibLikeButton.setImageResource(R.mipmap.heartfill);
-                                ProductArray.get(position).setWishStatus("1");
-                                //test
                                 WishlistAdd(position);
                             }
                         }else{
@@ -592,6 +664,8 @@ public class ProductListing extends AppCompatActivity {
         pDialog.setCancelable(true);
         pDialog.show();
 
+        System.out.println("Wowwwwwwwww "+ProductParams);
+
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 product_url, new JSONObject(ProductParams),
                 new Response.Listener<JSONObject>() {
@@ -611,7 +685,7 @@ public class ProductListing extends AppCompatActivity {
                             if(resultsArray.length()<1){
 
                                 new SweetAlertDialog(ProductListing.this, SweetAlertDialog.ERROR_TYPE)
-                                        .setTitleText("No ping ")
+                                        .setTitleText("No Products ")
                                         .setContentText("No products available in this category.")
                                         .show();
                             }else {
@@ -622,23 +696,35 @@ public class ProductListing extends AppCompatActivity {
                             }else {
                                 prodCount = String.valueOf(resultsArray.length()) + " Products";
                             }
-
+                            String badge;
                             for (int i=0; i<resultsArray.length(); i++){
                                 String prodId=resultsArray.getJSONObject(i).getString("id");
                                 String mainImg=resultsArray.getJSONObject(i).getString("image");
                                 String prodTitle=resultsArray.getJSONObject(i).getString("title");
                                 String prodActPric=resultsArray.getJSONObject(i).getString("actual_price");
                                 String prodOffrPric=resultsArray.getJSONObject(i).getString("selling_price");
+                                String averagerating=resultsArray.getJSONObject(i).getString("averagerating");
                                 String wishStatus=resultsArray.getJSONObject(i).getString("wishlist");
-                              //  String badge=resultsArray.getJSONObject(i).getString("badgename");
+                                if(resultsArray.getJSONObject(i).has("badge"))
+                                {
+                                    badge=resultsArray.getJSONObject(i).getString("badge");
+                                }
+                                else
+                                {
+                                    badge=resultsArray.getJSONObject(i).getJSONObject("comboofferdetails").getString("badge");
+
+                                }
+
+
                                 ProductItems obj=new ProductItems(
                                         prodId,
-                                        "http://athira-pc:8080/dcbooks/"+mainImg,
+                                        "http://dcbookstore.tk/"+mainImg,
                                         prodTitle,
                                         prodActPric,
                                         prodOffrPric,
                                         wishStatus,
-                                        ""
+                                        "http://dcbookstore.tk/"+badge,
+                                        averagerating
                                 );
                                 ProductArray.add(obj);
                             }
@@ -650,6 +736,10 @@ public class ProductListing extends AppCompatActivity {
 
                         } catch (JSONException e) {
                             Log.d("JSONExceptionLogin",e.toString());
+                            new SweetAlertDialog(ProductListing.this, SweetAlertDialog.ERROR_TYPE)
+                                    .setTitleText("No Products ")
+                                    .setContentText("No products available in this category.")
+                                    .show();
                             e.printStackTrace();
                             pDialog.dismiss();
 
@@ -686,6 +776,8 @@ public class ProductListing extends AppCompatActivity {
         pDialog.setCancelable(true);
         pDialog.show();
 
+        System.out.println("Search Responce---> "+ new JSONObject(SearchParams));
+
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 search_url, new JSONObject(SearchParams),
                 new Response.Listener<JSONObject>() {
@@ -696,75 +788,64 @@ public class ProductListing extends AppCompatActivity {
 
                         System.out.println("Search Responce---> "+response.toString());
 
+
+
                         try {
                             ProductArray.clear();
-                            JSONObject jsonResponse = new JSONObject(String.valueOf(response));
-                            JSONArray resultsArray = jsonResponse.getJSONArray("Homekeysearch");
+                            if(response.has("status"))
+                            {
+                                if(response.getString("status").equals("false"))
+                                {
 
-                            if(resultsArray.length()<1){
-
-
-                                new SweetAlertDialog(ProductListing.this, SweetAlertDialog.ERROR_TYPE)
-                                        .setTitleText("No products")
-                                        .setContentText("No product found matching the given keyword.")
-                                        .show();
-                            }else {
-
+                                    new SweetAlertDialog(ProductListing.this, SweetAlertDialog.ERROR_TYPE)
+                                            .setTitleText("No products")
+                                            .setContentText("No product found matching the given keyword.")
+                                            .show();
+                                }
 
                             }
-//                            String prodCount= String.valueOf(resultsArray.length())+" Products";
-//                            tv_ProductCategory.setText(prodCount);
-                            //Test
+
+                            JSONObject jsonResponse = new JSONObject(String.valueOf(response));
+                            JSONArray resultsArray = jsonResponse.getJSONArray("products");
+
+                            tv_ProductCategory.setText(String.valueOf(resultsArray.length()+" Items"));
+                            String badge;
                             for (int i=0; i<resultsArray.length(); i++){
                                 String prodId=resultsArray.getJSONObject(i).getString("id");
                                 String mainImg=resultsArray.getJSONObject(i).getString("image");
                                 String prodTitle=resultsArray.getJSONObject(i).getString("title");
-                                String prodActPric=resultsArray.getJSONObject(i).getString("actualprice");
-                                String prodOffrPric=resultsArray.getJSONObject(i).getString("sellingprice");
-                                String wishStatus=resultsArray.getJSONObject(i).getString("wishliststatus");
-                                String badge=resultsArray.getJSONObject(i).getString("badgename");
+                                String prodActPric=resultsArray.getJSONObject(i).getString("actual_price");
+                                String prodOffrPric=resultsArray.getJSONObject(i).getString("selling_price");
+                                String wishStatus=resultsArray.getJSONObject(i).getString("wishlist");
+                                String averagerating=resultsArray.getJSONObject(i).getString("averagerating");
+                                if(resultsArray.getJSONObject(i).has("badge"))
+                                {
+                                    badge=resultsArray.getJSONObject(i).getString("badge");
+                                }
+                                else
+                                {
+                                    badge=resultsArray.getJSONObject(i).getJSONObject("comboofferdetails").getString("badge");
+
+                                }
+
+
                                 ProductItems obj=new ProductItems(
                                         prodId,
-                                        mainImg,
+                                        "http://dcbookstore.tk/"+mainImg,
                                         prodTitle,
                                         prodActPric,
                                         prodOffrPric,
                                         wishStatus,
-                                        badge
+                                        "http://dcbookstore.tk/"+badge,
+                                        averagerating
                                 );
                                 ProductArray.add(obj);
                             }
-                            Log.d("dsjfkaads",ProductArray.toString());
+                            adpaterRefresh="0";
                             productAdapter=new MyAdapter(ProductArray);
                             rv_product_listing.setAdapter(productAdapter);
 
-//                            String Status=jsonResponse.getString("status");
-//                            String Message=jsonResponse.getString("result");
-//
-//                            if(Status.equals("true"))
-//                            {
 
-//                                et_login_email.getText().clear();
-//                                et_login_pass.getText().clear();
-
-//                                edit.putString("Username",jsonResponse.getString("name"));
-//                                edit.putString("User_id",jsonResponse.getString("userId"));
-//                                edit.putString("Login_Status","success");
-//                                edit.putString("Firsttime","YES");
-//                                edit.commit();
-//
-//                                Intent in=new Intent(ProductListing.this,MainActivity.class);
-//                                startActivity(in);
-//                                finish();
-//
-//                            }
-//                            else
-//                            {
-//                                new SweetAlertDialog(ProductListing.this, SweetAlertDialog.ERROR_TYPE)
-//                                        .setTitleText("Oops...")
-//                                        .setContentText(Message)
-//                                        .show();
-//                            }
 
                         } catch (JSONException e) {
                             Log.d("JSONExceptionLogin",e.toString());
@@ -804,6 +885,8 @@ public class ProductListing extends AppCompatActivity {
         pDialog.setCancelable(true);
         pDialog.show();
 
+        System.out.println("Sort Responce---> "+new JSONObject(SortParams));
+
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 sort_url, new JSONObject(SortParams),
                 new Response.Listener<JSONObject>() {
@@ -819,25 +902,40 @@ public class ProductListing extends AppCompatActivity {
 //                            rv_product_listing.getRecycledViewPool().clear();
 //                            productAdapter.notifyDataSetChanged();
                             JSONObject jsonResponse = new JSONObject(String.valueOf(response));
-                            JSONArray resultsArray = jsonResponse.getJSONArray("productsortlist");
+                            JSONArray resultsArray = jsonResponse.getJSONArray("products");
                             String prodCount= String.valueOf(resultsArray.length())+" Products";
                            // tv_ProductCategory.setText(prodCount);
+                            tv_ProductCategory.setText(String.valueOf(resultsArray.length()+" Items"));
+                            String badge;
                             for (int i=0; i<resultsArray.length(); i++){
                                 String prodId=resultsArray.getJSONObject(i).getString("id");
                                 String mainImg=resultsArray.getJSONObject(i).getString("image");
                                 String prodTitle=resultsArray.getJSONObject(i).getString("title");
-                                String prodActPric=resultsArray.getJSONObject(i).getString("actualprice");
-                                String prodOffrPric=resultsArray.getJSONObject(i).getString("sellingprice");
-                                String wishStatus=resultsArray.getJSONObject(i).getString("wishliststatus");
-                                String badge=resultsArray.getJSONObject(i).getString("badgename");
+                                String prodActPric=resultsArray.getJSONObject(i).getString("actual_price");
+                                String prodOffrPric=resultsArray.getJSONObject(i).getString("selling_price");
+                                String wishStatus=resultsArray.getJSONObject(i).getString("wishlist");
+
+                                String averagerating=resultsArray.getJSONObject(i).getString("averagerating");
+                                if(resultsArray.getJSONObject(i).has("badge"))
+                                {
+                                    badge=resultsArray.getJSONObject(i).getString("badge");
+                                }
+                                else
+                                {
+                                    badge=resultsArray.getJSONObject(i).getJSONObject("comboofferdetails").getString("badge");
+
+                                }
+
+
                                 ProductItems obj=new ProductItems(
                                         prodId,
-                                        mainImg,
+                                        "http://dcbookstore.tk/"+mainImg,
                                         prodTitle,
                                         prodActPric,
                                         prodOffrPric,
                                         wishStatus,
-                                        badge
+                                        "http://dcbookstore.tk/"+badge,
+                                        averagerating
                                 );
                                 ProductArray.add(obj);
                             }
@@ -876,6 +974,10 @@ public class ProductListing extends AppCompatActivity {
                             Log.d("JSONExceptionLogin",e.toString());
                             e.printStackTrace();
                             pDialog.dismiss();
+                            new SweetAlertDialog(ProductListing.this, SweetAlertDialog.ERROR_TYPE)
+                                    .setTitleText("No Products ")
+                                    .setContentText("No products available in this category.")
+                                    .show();
 
                         }
                         catch (NullPointerException e)
@@ -923,11 +1025,11 @@ public class ProductListing extends AppCompatActivity {
                         try {
                             ProductArray.clear();
                             JSONObject jsonResponse = new JSONObject(String.valueOf(response));
-                            JSONArray resultsArray = jsonResponse.getJSONArray("filterresultlist");
+                            JSONArray resultsArray = jsonResponse.getJSONArray("filterresult");
                             if(resultsArray.length()<1){
 
                                 new SweetAlertDialog(ProductListing.this, SweetAlertDialog.ERROR_TYPE)
-                                        .setTitleText("No products")
+                                        .setTitleText("No Products")
                                         .setContentText("No product found matching the given filter criteria.")
                                         .show();
                             }else {
@@ -936,22 +1038,35 @@ public class ProductListing extends AppCompatActivity {
 //                            String prodCount= String.valueOf(resultsArray.length())+" Products";
 //                            tv_ProductCategory.setText(prodCount);
                             //Test
+                            String badge;
                             for (int i=0; i<resultsArray.length(); i++){
                                 String prodId=resultsArray.getJSONObject(i).getString("id");
                                 String mainImg=resultsArray.getJSONObject(i).getString("image");
                                 String prodTitle=resultsArray.getJSONObject(i).getString("title");
-                                String prodActPric=resultsArray.getJSONObject(i).getString("actualprice");
-                                String prodOffrPric=resultsArray.getJSONObject(i).getString("sellingprice");
-                                String wishStatus=resultsArray.getJSONObject(i).getString("wishliststatus");
-                                String badge=resultsArray.getJSONObject(i).getString("badgename");
+                                String prodActPric=resultsArray.getJSONObject(i).getString("actual_price");
+                                String prodOffrPric=resultsArray.getJSONObject(i).getString("selling_price");
+                                String wishStatus=resultsArray.getJSONObject(i).getString("wishlist");
+                                String averagerating=resultsArray.getJSONObject(i).getString("averagerating");
+                                if(resultsArray.getJSONObject(i).has("badge"))
+                                {
+                                    badge=resultsArray.getJSONObject(i).getString("badge");
+                                }
+                                else
+                                {
+                                    badge=resultsArray.getJSONObject(i).getJSONObject("comboofferdetails").getString("badge");
+
+                                }
+
+
                                 ProductItems obj=new ProductItems(
                                         prodId,
-                                        mainImg,
+                                        "http://dcbookstore.tk/"+mainImg,
                                         prodTitle,
                                         prodActPric,
                                         prodOffrPric,
                                         wishStatus,
-                                        badge
+                                        "http://dcbookstore.tk/"+badge,
+                                        averagerating
                                 );
                                 ProductArray.add(obj);
                             }
@@ -959,38 +1074,14 @@ public class ProductListing extends AppCompatActivity {
                             productAdapter=new MyAdapter(ProductArray);
                             rv_product_listing.swapAdapter(productAdapter,false);
 
-//                            String Status=jsonResponse.getString("status");
-//                            String Message=jsonResponse.getString("result");
-//
-//                            if(Status.equals("true"))
-//                            {
-
-//                                et_login_email.getText().clear();
-//                                et_login_pass.getText().clear();
-
-//                                edit.putString("Username",jsonResponse.getString("name"));
-//                                edit.putString("User_id",jsonResponse.getString("userId"));
-//                                edit.putString("Login_Status","success");
-//                                edit.putString("Firsttime","YES");
-//                                edit.commit();
-//
-//                                Intent in=new Intent(ProductListing.this,MainActivity.class);
-//                                startActivity(in);
-//                                finish();
-//
-//                            }
-//                            else
-//                            {
-//                                new SweetAlertDialog(ProductListing.this, SweetAlertDialog.ERROR_TYPE)
-//                                        .setTitleText("Oops...")
-//                                        .setContentText(Message)
-//                                        .show();
-//                            }
-
-                        } catch (JSONException e) {
+                            } catch (JSONException e) {
                             Log.d("JSONExceptionLogin",e.toString());
                             e.printStackTrace();
                             pDialog.dismiss();
+                            new SweetAlertDialog(ProductListing.this, SweetAlertDialog.ERROR_TYPE)
+                                    .setTitleText("No Products ")
+                                    .setContentText("No products available in this category.")
+                                    .show();
 
                         }
                         catch (NullPointerException e)
@@ -1025,6 +1116,8 @@ public class ProductListing extends AppCompatActivity {
         pDialog.setCancelable(true);
         pDialog.show();
 
+        System.out.println("ssssssssssssss"+new JSONObject(WishlistAddParams));
+
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 wishlist_add_url, new JSONObject(WishlistAddParams),
                 new Response.Listener<JSONObject>() {
@@ -1043,9 +1136,10 @@ public class ProductListing extends AppCompatActivity {
 
                             if(Status.equals("true"))
                             {
+                                ProductArray.get(key).setWishStatus("true");
                                 productAdapter.notifyItemChanged(key);
                                 new SweetAlertDialog(ProductListing.this, SweetAlertDialog.SUCCESS_TYPE)
-                                        .setTitleText("Added")
+                                        .setTitleText("Wish list added")
                                         .setContentText(Message)
                                         .show();
 //                                et_login_email.getText().clear();
@@ -1125,6 +1219,7 @@ public class ProductListing extends AppCompatActivity {
 
                             if(Status.equals("true"))
                             {
+                                ProductArray.get(key).setWishStatus("false");
                                 productAdapter.notifyItemChanged(key);
                                 new SweetAlertDialog(ProductListing.this, SweetAlertDialog.ERROR_TYPE)
                                         .setTitleText("Removed")
@@ -1193,9 +1288,11 @@ public class ProductListing extends AppCompatActivity {
 
             case android.R.id.home:
                 if (identifier.equals("10")){
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                  /*  Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
+                    startActivity(intent);*/
+
+                    ProductListing.this.finish();
                 }else {
 
                     InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
@@ -1210,9 +1307,9 @@ public class ProductListing extends AppCompatActivity {
     }
 
     public class ProductItems{
-        String prodId,mainImg,prodTitle,actualPric,offerPric,wishStatus,badge;
+        String prodId,mainImg,prodTitle,actualPric,offerPric,wishStatus,badge,averagerating;
 
-        public ProductItems(String prodId,String mainImg, String prodTitle, String actualPric, String offerPric,String wishStatus,String badge) {
+        public ProductItems(String prodId,String mainImg, String prodTitle, String actualPric, String offerPric,String wishStatus,String badge,String Averagerating) {
             this.prodId = prodId;
             this.mainImg = mainImg;
             this.prodTitle = prodTitle;
@@ -1220,6 +1317,7 @@ public class ProductListing extends AppCompatActivity {
             this.offerPric = offerPric;
             this.wishStatus = wishStatus;
             this.badge = badge;
+            this.averagerating=Averagerating;
         }
 
         public void setWishStatus(String wishStatus) {
@@ -1252,6 +1350,9 @@ public class ProductListing extends AppCompatActivity {
 
         public String getBadge() {
             return badge;
+        }
+        public String getaveragerating() {
+            return averagerating;
         }
     }
     public String getDecimal(String value){

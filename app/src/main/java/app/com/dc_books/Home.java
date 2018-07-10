@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -28,6 +29,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +38,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import me.relex.circleindicator.CircleIndicator;
@@ -48,10 +52,10 @@ public class Home extends Fragment {
 
 
     Typeface font,font2,font3;
-    String Banner_Url="http://athira-pc:8080/dcbooks/api/homescreen/show_slider";
-    String Category_Url="http://athira-pc:8080/dcbooks/api/homescreen/top_categories";
-    String Newlaunches_Url="http://athira-pc:8080/dcbooks/api/homescreen/new_releases";
-    String Topselling_Url="http://athira-pc:8080/dcbooks/api/homescreen/best_sellers";
+    String Banner_Url="https://dcbookstore.tk/api/homescreen/show_slider";
+    String Category_Url="https://dcbookstore.tk/api/homescreen/top_categories";
+    String Newlaunches_Url="https://dcbookstore.tk/api/homescreen/new_releases";
+    String Topselling_Url="https://dcbookstore.tk/api/homescreen/best_sellers";
     Map<String,String> HomeParams = new HashMap<String, String>();
 
     ArrayList<String> BannerID = new ArrayList<>();
@@ -99,6 +103,12 @@ public class Home extends Fragment {
 
     CardView cardView1;
 
+    int currentPage = 0;
+    Timer timer;
+    final long DELAY_MS = 5000;
+    final long PERIOD_MS = 6000;
+    int BannerImageSize=0;
+
 
 
 
@@ -128,10 +138,13 @@ public class Home extends Fragment {
 
         HomeParams.put("appkey",appkey);
         HomeParams.put("appsecurity",appsecurity);
+        HomeParams.put("value",String.valueOf(MainActivity.Brand_Type));
+        HomeParams.put("languagetype",MainActivity.languageType);
+
 
 
         //recyclerViewLayoutManager = new GridLayoutManager(getActivity(),3);
-        recyclerViewLayoutManager = new GridLayoutManager(getActivity(),2) {
+        recyclerViewLayoutManager = new GridLayoutManager(getActivity(),3) {
             @Override
             public boolean canScrollVertically() {
                 return false;
@@ -146,9 +159,9 @@ public class Home extends Fragment {
         float density = getResources().getDisplayMetrics().density;
 
         System.out.println("density  "+density);
-
-
         isNetworkConnected();
+
+
 
         if(NETCONNECTION==1) {
             Call_BannerImages();
@@ -189,6 +202,7 @@ public class Home extends Fragment {
                             JSONObject jsonResponse = new JSONObject(String.valueOf(response));
                             JSONArray jsonMain = jsonResponse.getJSONArray("slider");
                             int lengthJsonArr = jsonMain.length();
+                            BannerImageSize=lengthJsonArr;
                             for(int i=0; i < lengthJsonArr; i++) {
                                 JSONObject jsonChild = jsonMain.getJSONObject(i);
                                 String banner_id=jsonChild.getString("id");
@@ -197,7 +211,7 @@ public class Home extends Fragment {
 
 
                                 BannerID.add(banner_id);
-                                BannerImage.add("http://athira-pc:8080/dcbooks/"+banner_image);
+                                BannerImage.add("http://dcbookstore.tk/"+banner_image);
                                 BannerLink.add(banner_link);
                             }
                         } catch (JSONException e) {
@@ -214,6 +228,11 @@ public class Home extends Fragment {
                         viewPager.setAdapter(mCustomPagerAdapter);
                         indicator.setViewPager(viewPager);
 
+                        if(mCustomPagerAdapter!=null)
+                        {
+                            AutoScroll();
+                        }
+
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -229,6 +248,27 @@ public class Home extends Fragment {
         });
         AppController.getInstance().addToRequestQueue(jsonObjReq,
                 "jobj_req");
+    }
+    public void AutoScroll()
+    {
+        final Handler handler = new Handler();
+        final Runnable Update = new Runnable() {
+            public void run() {
+                if (currentPage == BannerImageSize) {
+                    currentPage = 0;
+                }
+                viewPager.setCurrentItem(currentPage++, true);
+            }
+        };
+
+        timer = new Timer(); // This will create a new Thread
+        timer .schedule(new TimerTask() { // task to be scheduled
+
+            @Override
+            public void run() {
+                handler.post(Update);
+            }
+        }, DELAY_MS, PERIOD_MS);
     }
     class CustomPagerAdapter extends PagerAdapter {
 
@@ -305,7 +345,7 @@ public class Home extends Fragment {
 
                                 CategoryID.add(categoryid);
                                 CategoryName.add(categoryname);
-                                CategoryImage.add("http://athira-pc:8080/dcbooks/"+categoryimage);
+                                CategoryImage.add("http://dcbookstore.tk/"+categoryimage);
 
                                 ItemData itemsData = new ItemData(CategoryID.get(i), CategoryName.get(i),CategoryImage.get(i));
                                 arraylist.add(itemsData);
@@ -420,6 +460,7 @@ public class Home extends Fragment {
                     @Override
                     public void onClick(View v) {
 
+                        MainActivity.Brand_Type=MainActivity.Brand_Type_Flag;
                         Intent in=new Intent(getActivity(),ProductListing.class);
                         in.putExtra("CatID",Categorylist.get(getAdapterPosition()).getcat_id());
                         in.putExtra("CatName",Categorylist.get(getAdapterPosition()).getcat_name());
@@ -469,7 +510,7 @@ public class Home extends Fragment {
 
                                 NewLaunchID.add(newlaunchid);
                                 NewLaunchName.add("");
-                                NewLaunchImage.add("http://athira-pc:8080/dcbooks/"+newlaunchimage);
+                                NewLaunchImage.add("http://dcbookstore.tk/"+newlaunchimage);
                                 NewLaunchBadge.add("");
 
                                 ItemData1 itemsData = new ItemData1(NewLaunchID.get(i), NewLaunchName.get(i),NewLaunchImage.get(i),NewLaunchBadge.get(i));
@@ -567,8 +608,25 @@ public class Home extends Fragment {
             viewHolder.t_categoryname.setTypeface(font);
 
             viewHolder.t_categoryname.setText(Newlauncheslist.get(position).getnewlaunch_name());
-            Glide.with(getActivity())
-                    .load(Newlauncheslist.get(position).getnewlaunch_image()).into(viewHolder.img_categoryimage);
+
+
+            float density = getResources().getDisplayMetrics().density;
+
+            if(density>2.0)
+            {
+                Glide.with(getActivity())
+                        .load(Newlauncheslist.get(position).getnewlaunch_image()).apply(new RequestOptions().override(320, 413)).into(viewHolder.img_categoryimage);
+            }
+            else
+            {
+                Glide.with(getActivity())
+                        .load(Newlauncheslist.get(position).getnewlaunch_image()).into(viewHolder.img_categoryimage);
+            }
+
+
+
+            RequestOptions imagesize = new RequestOptions();
+            imagesize.override(320,413);
 
             Glide.with(getActivity())
                     .load(Newlauncheslist.get(position).getnewlaunch_badge()).into(viewHolder.img_badgeview);
@@ -593,9 +651,22 @@ public class Home extends Fragment {
                     @Override
                     public void onClick(View v) {
 
-                        Intent in=new Intent(getActivity(),ProductDetails.class);
-                        in.putExtra("ProdID",Newlauncheslist.get(getAdapterPosition()).getnewlaunch_id());
-                        startActivity(in);
+                        MainActivity.Brand_Type=MainActivity.Brand_Type_Flag;
+
+
+                        if(MainActivity.Brand_Type==2)
+                        {
+                            Intent in=new Intent(getActivity(),GiftandToys.class);
+                            in.putExtra("ProdID",Newlauncheslist.get(getAdapterPosition()).getnewlaunch_id());
+                            startActivity(in);
+                        }
+                        else
+                        {
+                            Intent in=new Intent(getActivity(),ProductDetails.class);
+                            in.putExtra("ProdID",Newlauncheslist.get(getAdapterPosition()).getnewlaunch_id());
+                            startActivity(in);
+                        }
+
 
                     }
                 });
@@ -640,7 +711,7 @@ public class Home extends Fragment {
 
                                 TopSellID.add(topsellid);
                                 TopSellName.add("");
-                                TopSellImage.add("http://athira-pc:8080/dcbooks/"+topsellimage);
+                                TopSellImage.add("http://dcbookstore.tk/"+topsellimage);
                                 TopSellBadge.add("");
 
                                 ItemData2 itemsData = new ItemData2(TopSellID.get(i), TopSellName.get(i),TopSellImage.get(i),TopSellBadge.get(i));
@@ -737,8 +808,18 @@ public class Home extends Fragment {
             viewHolder.t_categoryname.setTypeface(font);
 
             viewHolder.t_categoryname.setText(Topsellinglist.get(position).gettopsell_name());
-            Glide.with(getActivity())
-                    .load(Topsellinglist.get(position).gettopsell_image()).into(viewHolder.img_categoryimage);
+
+            if(getResources().getDisplayMetrics().density>2.0)
+            {
+                Glide.with(getActivity())
+                        .load(Topsellinglist.get(position).gettopsell_image()).apply(new RequestOptions().override(320, 413)).into(viewHolder.img_categoryimage);
+            }
+            else
+            {
+                Glide.with(getActivity())
+                        .load(Topsellinglist.get(position).gettopsell_image()).into(viewHolder.img_categoryimage);
+            }
+
 
             Glide.with(getActivity())
                     .load(Topsellinglist.get(position).gettopsell_badge()).into(viewHolder.img_badgeview);
@@ -755,21 +836,36 @@ public class Home extends Fragment {
             public ViewHolder(View itemLayoutView) {
                 super(itemLayoutView);
 
-                t_categoryname =itemLayoutView.findViewById(R.id.textView);
-                img_categoryimage=itemLayoutView.findViewById(R.id.imageView5);
-                img_badgeview=itemLayoutView.findViewById(R.id.imageView10);
+                t_categoryname = itemLayoutView.findViewById(R.id.textView);
+                img_categoryimage = itemLayoutView.findViewById(R.id.imageView5);
+                img_badgeview = itemLayoutView.findViewById(R.id.imageView10);
 
-                itemLayoutView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent in=new Intent(getActivity(),ProductDetails.class);
-                        in.putExtra("ProdID",Topsellinglist.get(getAdapterPosition()).gettopsell_id());
-                        startActivity(in);
-                    }
-                });
+
+
+                    itemLayoutView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+
+                            if (MainActivity.Brand_Type == 2) {
+                                Intent in = new Intent(getActivity(), GiftandToys.class);
+                                in.putExtra("ProdID", Topsellinglist.get(getAdapterPosition()).gettopsell_id());
+                                startActivity(in);
+                            }
+                            else
+                            {
+                                Intent in = new Intent(getActivity(), ProductDetails.class);
+                                in.putExtra("ProdID", Topsellinglist.get(getAdapterPosition()).gettopsell_id());
+                                startActivity(in);
+                            }
+
+                        }
+                    });
+
 
 
             }
+
         }// Return the size of your itemsData (invoked by the layout manager)
 
         @Override

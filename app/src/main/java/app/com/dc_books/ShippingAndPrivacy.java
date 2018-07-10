@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
@@ -55,7 +57,14 @@ public class ShippingAndPrivacy extends AppCompatActivity {
         about_webView.setWebViewClient(webViewClient);
 
         about_webView.getSettings().setJavaScriptEnabled(true);
-        about_webView.loadUrl("http://level10boutique.com/delivery.html");
+        about_webView.loadUrl("https://dcbookstore.tk/privacypolicy.html");
+
+        about_webView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
     }
     public class WebClientClass extends WebViewClient {
         ProgressDialog pd = null;

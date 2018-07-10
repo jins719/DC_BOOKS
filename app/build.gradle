@@ -27,7 +27,17 @@ android {
     }
 }
 
+repositories {
+    mavenCentral()
+    maven {
+        url "https://s3-ap-southeast-1.amazonaws.com/godel-release/godel/"
+    }
+}
+
 dependencies {
+    implementation 'com.android.support:support-v4:26.1.0'
+    
+    implementation 'ai.devsupport.instamojo:instamojolib:0.1.6'
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })

@@ -86,16 +86,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:layout_marginTop="2dp"
-                        android:lines="2"
-                        android:gravity="left|center_vertical"
+                        android:layout_alignStart="@+id/tv_prod_actual_pric"
                         android:ellipsize="end"
-                        android:textSize="14dp"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="left|center_vertical"
+                        android:lines="2"
+                        android:layout_marginRight="10dp"
+                        android:text="Pink duhh  dhuihdh"
                         android:textColor="#333333"
-                        android:text="Pink Embroydered Cotton Salvar Suit" />
+                        android:textSize="14dp"/>
 
                     <TextView
                         android:id="@+id/tv_prod_actual_pric"
@@ -103,11 +102,12 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
-                        android:layout_below="@+id/tv_product_title"
+                        android:layout_below="@+id/ratingBar"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
                         android:layout_marginTop="0dp"
-                        android:textSize="12sp"
+                        android:textSize="12dp"
+                        android:visibility="gone"
                         android:textColor="#b5b5b5"
                         android:text="Rs.3599" />
 
@@ -125,6 +125,15 @@
                         android:layout_marginTop="0dp"
                         android:textColor="#ce3854"
                         android:text="Rs.995" />
+                    <RatingBar
+                        android:id="@+id/ratingBar"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:visibility="gone"
+                        android:layout_marginLeft="5dp"
+                        android:layout_below="@+id/tv_product_title"/>
 
 
                 </RelativeLayout>

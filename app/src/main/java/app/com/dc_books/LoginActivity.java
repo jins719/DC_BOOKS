@@ -72,10 +72,10 @@ public class LoginActivity extends AppCompatActivity {
     Toolbar toolbar;
     public static final String mp = "";
     int NETCONNECTION;
-    String ip_head = "http://athira-pc:8080/dcbooks/";
-    String login_url= "http://athira-pc:8080/dcbooks/api/user/login";
-    String register_url= "http://athira-pc:8080/dcbooks/api/user/register";
-    String forgot_password_url="http://athira-pc:8080/dcbooks/api/user/forgot_password";
+    String ip_head = "http://dcbookstore.tk/";
+    String login_url= "https://dcbookstore.tk/api/user/login";
+    String register_url= "https://dcbookstore.tk/api/user/register";
+    String forgot_password_url="https://dcbookstore.tk/api/user/forgot_password";
     Map<String, String> LoginParams = new HashMap<>();
     Map<String, String> RegisterParams = new HashMap<>();
     Map<String, String> ForgotPassParams = new HashMap<>();
@@ -90,10 +90,13 @@ public class LoginActivity extends AppCompatActivity {
 
     String appkey="aec2a0b15161ae445865b32bbefef972";
     String appsecurity="928e6af859edef918313aac98d5d48ee";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        // Call the function callInstamojo to start payment here
 
 
         loginButton = findViewById(R.id.bt_fblogin);
@@ -186,7 +189,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         String token= FirebaseInstanceId.getInstance().getToken();
-        Log.d("fkjsakfjak",token.toString());
+
         sv_scroll.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
         sv_scroll.setFocusable(true);
         sv_scroll.setFocusableInTouchMode(true);
@@ -452,7 +455,7 @@ public class LoginActivity extends AppCompatActivity {
                             if(Status.equals("true"))
                             {
                                 String userimage=jsonResponse.getString("profile_image");
-                                edit.putString("Username",email);
+                                edit.putString("Username",jsonResponse.getString("username"));
                                 edit.putString("User_id",jsonResponse.getString("user_id"));
                                 edit.putString("UserImage", ip_head+userimage);
                                 edit.putString("EmailID",email);
@@ -774,7 +777,7 @@ public class LoginActivity extends AppCompatActivity {
                                 LoginParams.put("firstname", firstname);
                                 LoginParams.put("lastname", lastname);
 
-                                login_url= "http://athira-pc:8080/dcbooks/api/user/social_login";
+                                login_url= "https://dcbookstore.tk/api/user/social_login";
 
 
                                 isNetworkConnected();
@@ -834,7 +837,7 @@ public class LoginActivity extends AppCompatActivity {
             LoginParams.put("lastname", lastname);
             LoginParams.put("applogintype", "Gmail");
 
-            login_url= "http://athira-pc:8080/dcbooks/api/user/social_login";
+            login_url= "https://dcbookstore.tk/api/user/social_login";
 
 
             isNetworkConnected();

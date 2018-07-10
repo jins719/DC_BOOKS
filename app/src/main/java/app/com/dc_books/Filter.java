@@ -1,7 +1,9 @@
 package app.com.dc_books;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -9,9 +11,10 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -62,24 +65,45 @@ public class Filter extends AppCompatActivity {
     ArrayList<selectedItems> selectedInnerList=new ArrayList<>();
     ArrayList<selectedItems> testInnerArray=new ArrayList<>();
     CheckBox testInnerElement;
-    String ip_head = "http://www.level10boutique.com/";
-    String fetch_filter_url = ip_head+"admin/services/Appfiltersearch";
+
+
+    String fetch_filter_url ;
+    String fetch_brand_url;
+
     Map<String, String> FetchFilterParams = new HashMap<>();
+    Map<String, String> FetchBrandParams = new HashMap<>();
     ArrayList<filterLeftItems> filterLeftAttributes=new ArrayList<>();
     ArrayList<filterRightItems> filterRightAttributes=new ArrayList<>();
     ArrayList<ArrayList<filterRightItems>> mainRightAttributeArray=new ArrayList<>();
     ArrayList<ArrayList<filterSelectionTracking>> mainRightSelectionArray=new ArrayList<>();
     ArrayList<allSelectedIds> allSelectedIdList=new ArrayList<>();
     CheckBox cb_track;
+    JSONObject brandResponse;
     List<String> allIds;
     List<String> allAttributeIds;
+    List<String> allBrandIds;
     int NETCONNECTION;
     String cat_id;
+    String appkey="TWF5dXJpc2VjdXJpdHlrZXkyMDE4";
+    String appsecurity="TWF5dXJpc2VjdXJpdHljaGVjazIwMTg=";
+    String noattristatus,allidcheck;
+
+    public ProgressDialog pDialog;
+    Handler pDialoghandler = new Handler();
+    String selectlang;
+    public static final String mp = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
+
+        //For activity
+        SharedPreferences s = getSharedPreferences(Filter.mp, 0);
+
+        fetch_filter_url ="https://dcbookstore.tk/api/giftandtoys/attributefilter";
+        //fetch_brand_url=ip_head+"ckadministrator/services/AppBrandfiltersearch";
 
         Bundle extras = getIntent().getExtras();
         cat_id="0";
@@ -90,6 +114,26 @@ public class Filter extends AppCompatActivity {
         isNetworkConnected();
         if(NETCONNECTION==1)
         {
+            FetchBrandParams.put("category_id",cat_id);
+//            FetchBrandData();
+        }
+        else
+        {
+//            String message;
+//            message=getString(R.string.nointernet);
+//            salert.Dialog(
+//                    message,
+//                    false,
+//                    Filter.this
+//            );
+        }
+
+        isNetworkConnected();
+        if(NETCONNECTION==1)
+        {
+
+            FetchFilterParams.put("appkey",MainActivity.appkey);
+            FetchFilterParams.put("appsecurity",MainActivity.appsecurity);
             FetchFilterParams.put("category_id",cat_id);
             FetchFilterData();
         }
@@ -112,6 +156,12 @@ public class Filter extends AppCompatActivity {
         tv_clear_all.setTypeface(custom_bold);
         tv_apply.setTypeface(custom_bold);
         tv_filter.setTypeface(custom_bold);
+
+         tv_apply.setText("APPLY");
+         tv_clear_all.setText("CLEAR ALL");
+         tv_filter.setText("FILTER");
+
+
 
         relativeValue.add(new rlValueSet("0", null));
         relativeValue.add(new rlValueSet("0", null));
@@ -168,19 +218,28 @@ public class Filter extends AppCompatActivity {
             sumUpSelectedIds();
             String allids = stringMaker(allIds);
             String allattributes = stringMaker(allAttributeIds);
-            System.out.println("jkfjaskjfdkjakfj"+allids+allattributes);
-            selectedId="none";
-            currentSelected="none";
-            Intent in =new Intent(Filter.this,ProductListing.class);
-            in.putExtra("attrid",allattributes);
-            in.putExtra("attrivalue",allids);
-            in.putExtra("Identifier","10");
-            in.putExtra("CatID",cat_id);
-            startActivity(in);
-            finish();
-            overridePendingTransition(R.anim.hold, R.anim.slide_out);
-            System.out.println("allidscollection" + allids);
-            System.out.println("allattributesselected" + allattributes);
+            String allbrandid = stringMaker(allBrandIds);
+            System.out.println("jkfjaskjfdkjakfj"+allids+"   "+allattributes+"   "+allbrandid);
+            if(allids.equals("") && allattributes.equals("") && allbrandid.equals("")){
+                finish();
+                selectedId="none";
+                currentSelected="none";
+                overridePendingTransition(R.anim.hold, R.anim.slide_out);
+            }else {
+                selectedId = "none";
+                currentSelected = "none";
+                Intent in = new Intent(Filter.this, ProductListing.class);
+                in.putExtra("attrid", allattributes);
+                in.putExtra("attrivalue", allids);
+                in.putExtra("brandid", allbrandid);
+                in.putExtra("Identifier", "10");
+                in.putExtra("CatID", cat_id);
+                startActivity(in);
+                finish();
+                overridePendingTransition(R.anim.hold, R.anim.slide_out);
+                System.out.println("allidscollection" + allids);
+                System.out.println("allattributesselected" + allattributes);
+            }
         }
     }
     public void close(View view){
@@ -243,7 +302,7 @@ public class Filter extends AppCompatActivity {
         // Create new views (invoked by the layout manager)
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                               int viewType) {
+                                             int viewType) {
             // create a new view
             LayoutInflater inflater = LayoutInflater.from(
                     parent.getContext());
@@ -322,7 +381,7 @@ public class Filter extends AppCompatActivity {
                 }
             });
 
-//            holder.txtFooter.setText("Footer: " + name);
+//            holder.txtFooter.setText("Footer: " + firstname);
         }
 
         // Return the size of your dataset (invoked by the layout manager)
@@ -386,7 +445,7 @@ public class Filter extends AppCompatActivity {
         // Create new views (invoked by the layout manager)
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                                int viewType) {
+                                             int viewType) {
             // create a new view
             LayoutInflater inflater = LayoutInflater.from(
                     parent.getContext());
@@ -481,7 +540,7 @@ public class Filter extends AppCompatActivity {
 //                }
 //            });
 
-//            holder.txtFooter.setText("Footer: " + name);
+//
         }
 
         // Return the size of your dataset (invoked by the layout manager)
@@ -492,53 +551,156 @@ public class Filter extends AppCompatActivity {
 
     }
 
+    public void FetchBrandData(){
+
+//        final SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+//        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+//        pDialog.setTitleText("Loading");
+//        pDialog.setCancelable(true);
+//        pDialog.show();
+        System.out.println("searchfetchparams"+FetchFilterParams.toString());
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                fetch_brand_url, new JSONObject(FetchBrandParams),
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        System.out.println("Search brand Responce---> "+response.toString());
+                        try {
+                            brandResponse = new JSONObject(String.valueOf(response));
+                        } catch (JSONException e) {
+                            Log.d("JSONExceptionLogin",e.toString());
+                            e.printStackTrace();
+//                            pDialog.dismiss();
+                            new SweetAlertDialog(Filter.this, SweetAlertDialog.ERROR_TYPE)
+                                    .setTitleText("Something went wrong")
+                                    .setContentText("Please try again later")
+                                    .show();
+
+
+                        }
+                        catch (NullPointerException e)
+                        {
+                            Log.d("NullExceptionLogin",e.toString());
+                            e.printStackTrace();
+                            new SweetAlertDialog(Filter.this, SweetAlertDialog.ERROR_TYPE)
+                                    .setTitleText("Something went wrong")
+                                    .setContentText("Please try again later")
+                                    .show();
+//                            pDialog.dismiss();
+
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+//                pDialog.dismiss();
+
+                System.out.println("Search Responce---> "+error.toString());
+            }
+        });
+        AppController.getInstance().addToRequestQueue(jsonObjReq,
+                "jobj_req");
+    }
+
     public void FetchFilterData(){
 
-        final SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
-        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-        pDialog.setTitleText("Loading");
-        pDialog.setCancelable(true);
-        pDialog.show();
-
+//        final SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+//        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+//        pDialog.setTitleText("Loading");
+//        pDialog.setCancelable(true);
+//        pDialog.show();
+        showProgress();
+        System.out.println("searchfetchparams"+FetchFilterParams.toString());
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 fetch_filter_url, new JSONObject(FetchFilterParams),
                 new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-
-
-                        System.out.println("Search Responce---> "+response.toString());
+                        cancleProgress();
+                        String leftarraystatus="no",rightarraystatus="no";
+                        System.out.println("'---> "+response.toString());
                         JSONArray leftArray=null;
                         JSONArray rightArray=null;
                         try {
                             JSONObject jsonResponse = new JSONObject(String.valueOf(response));
-                            if (jsonResponse.has("attributelistleft")) {
-                                leftArray = jsonResponse.getJSONArray("attributelistleft");
+                            if (jsonResponse.has("attributesleft")) {
+                                leftarraystatus="yes";
+                                leftArray = jsonResponse.getJSONArray("attributesleft");
                             }
-                            if (jsonResponse.has("attributelist")) {
-                                rightArray = jsonResponse.getJSONArray("attributelist");
+                            if (jsonResponse.has("attributes")) {
+                                rightarraystatus="yes";
+                                rightArray = jsonResponse.getJSONArray("attributes");
                             }
-                            if (rightArray.length()<1){
+                            if (rightArray.length()<1 && (leftarraystatus.equals("no") || rightarraystatus.equals("no"))){
+                                cancleProgress();
                                 new SweetAlertDialog(Filter.this, SweetAlertDialog.ERROR_TYPE)
-                                        .setTitleText("Oops...")
-                                        .setContentText("No attributes.")
+                                        .setTitleText("No filter attributes for this category.")
                                         .show();
-                            }
-                            for (int i=0; i<leftArray.length(); i++){
-                                String attribute_id=leftArray.getJSONObject(i).getString("attribute_id");
-                                String attributename=leftArray.getJSONObject(i).getString("attributename");
-                                filterLeftAttributes.add(new filterLeftItems(attribute_id,attributename));
-                                mainRightAttributeArray.add(new ArrayList<filterRightItems>());
-                                mainRightSelectionArray.add(new ArrayList<filterSelectionTracking>());
-                                for (int j=0; j<rightArray.length();j++){
-                                    String counter= rightArray.getJSONObject(1).getString("attribute_id");
-                                    if(rightArray.getJSONObject(j).getString("attribute_id").equals(attribute_id)){
-                                        mainRightAttributeArray.get(i).add(new filterRightItems(rightArray.getJSONObject(j).getString("id"),rightArray.getJSONObject(j).getString("attribute_id"),rightArray.getJSONObject(j).getString("value")));
-                                        mainRightSelectionArray.get(i).add(new filterSelectionTracking(rightArray.getJSONObject(j).getString("id"),false,"none"));
+                            }else {
+                                System.out.println("reachedtilhere"+leftArray.toString()+" "+rightArray.toString());
+                                for (int i = 0; i < leftArray.length(); i++) {
+                                    String attribute_id = leftArray.getJSONObject(i).getString("id");
+                                    String attributename = leftArray.getJSONObject(i).getString("name");
+                                    System.out.println("enterinnerarray"+attribute_id+" "+attributename);
+                                    filterLeftAttributes.add(new filterLeftItems(attribute_id, attributename));
+                                    mainRightAttributeArray.add(new ArrayList<filterRightItems>());
+                                    mainRightSelectionArray.add(new ArrayList<filterSelectionTracking>());
+                                    for (int j = 0; j < rightArray.length(); j++) {
+//                                        String counter = rightArray.getJSONObject(1).getString("attribute_id");
+                                        if (rightArray.getJSONObject(j).getString("id").equals(attribute_id)) {
+                                            mainRightAttributeArray.get(i).add(new filterRightItems(rightArray.getJSONObject(j).getString("id"), rightArray.getJSONObject(j).getString("attributevalue_id"), rightArray.getJSONObject(j).getString("value")));
+                                            mainRightSelectionArray.get(i).add(new filterSelectionTracking(rightArray.getJSONObject(j).getString("id"), false, "none"));
+                                        }
                                     }
                                 }
                             }
+
+//                            System.out.println("haisfafa"+brandResponse.toString());
+//                            leftArray = brandResponse.getJSONArray("Brands");
+//                            rightArray = brandResponse.getJSONArray("Brand22");
+//
+//                            System.out.println("leftarrayparsed"+leftArray.toString());
+//                            System.out.println("rightarrayparsed"+rightArray.toString());
+//
+//                            if (rightArray.length()<1){
+//                                if (noattristatus.equals("none")) {
+//                                    String message;
+//                                    message="This category has no filtering option.";
+//                                    salert.Dialog(
+//                                            message,
+//                                            false,
+//                                            Filter.this
+//                                    );
+//                                }
+//                            }else {
+//
+//                                for (int i = 0; i < leftArray.length(); i++) {
+//                                    String attribute_id = leftArray.getJSONObject(i).getString("bid");
+//                                    String attributename = leftArray.getJSONObject(i).getString("brand");
+//                                    filterLeftAttributes.add(new filterLeftItems(attribute_id, attributename));
+//                                    mainRightAttributeArray.add(new ArrayList<filterRightItems>());
+//                                    mainRightSelectionArray.add(new ArrayList<filterSelectionTracking>());
+//                                    int maincount=mainRightAttributeArray.size();
+//                                    if (maincount==1){
+//                                        maincount=0;
+//                                    }else {
+//                                        maincount=maincount-1;
+//                                    }
+//                                    for (int j = 0; j < rightArray.length(); j++) {
+////                                    String counter= rightArray.getJSONObject(1).getString("brandid");
+//                                        mainRightAttributeArray.get(maincount).add(new filterRightItems(rightArray.getJSONObject(j).getString("uniqueId"), rightArray.getJSONObject(j).getString("brandid"), rightArray.getJSONObject(j).getString("brandname")));
+//                                        mainRightSelectionArray.get(maincount).add(new filterSelectionTracking(rightArray.getJSONObject(j).getString("uniqueId"), false, "none"));
+//                                    }
+//                                }
+//                                arraydismantler(filterLeftAttributes);
+//                            }
+
                             linearLayoutManagerLft = new LinearLayoutManager(Filter.this);
                             rv_filter_left.setLayoutManager(linearLayoutManagerLft);
 
@@ -548,8 +710,7 @@ public class Filter extends AppCompatActivity {
                             filterLftAdpater=new filterLeftAdapter(filterLeftAttributes);
                             rv_filter_left.setAdapter(filterLftAdpater);
 
-                            pDialog.dismiss();
-
+//                            pDialog.dismiss();
                             System.out.println("LeftArrayItems response "+leftArray.toString());
                             System.out.println("RightArrayItems response "+rightArray.toString());
 //                            String prodCount= String.valueOf(resultsArray.length())+" Products";
@@ -587,7 +748,7 @@ public class Filter extends AppCompatActivity {
 //                                et_login_email.getText().clear();
 //                                et_login_pass.getText().clear();
 
-//                                edit.putString("Username",jsonResponse.getString("name"));
+//                                edit.putString("Username",jsonResponse.getString("firstname"));
 //                                edit.putString("User_id",jsonResponse.getString("userId"));
 //                                edit.putString("Login_Status","success");
 //                                edit.putString("Firsttime","YES");
@@ -609,14 +770,29 @@ public class Filter extends AppCompatActivity {
                         } catch (JSONException e) {
                             Log.d("JSONExceptionLogin",e.toString());
                             e.printStackTrace();
-                            pDialog.dismiss();
+//
+                            cancleProgress();
 
+                            new SweetAlertDialog(Filter.this, SweetAlertDialog.ERROR_TYPE)
+                                    .setTitleText("No Attributes ")
+                                    .setContentText("No attributes available in this product.")
+                                    .show();
+//
                         }
                         catch (NullPointerException e)
                         {
                             Log.d("NullExceptionLogin",e.toString());
                             e.printStackTrace();
-                            pDialog.dismiss();
+//                            pDialog.dismiss();
+                            cancleProgress();
+
+//                            String message;
+//                            message="Something went wrong. Please try again later";
+//                            salert.Dialog(
+//                                    message,
+//                                    false,
+//                                    Filter.this
+//                            );
 
                         }
 
@@ -627,8 +803,8 @@ public class Filter extends AppCompatActivity {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                pDialog.dismiss();
-
+//                pDialog.dismiss();
+                cancleProgress();
                 System.out.println("Search Responce---> "+error.toString());
             }
         });
@@ -836,11 +1012,31 @@ public class Filter extends AppCompatActivity {
     public void sumUpSelectedIds(){
         allIds = new LinkedList();
         allAttributeIds = new LinkedList();
+        allBrandIds = new LinkedList();
         for (int i=0;i<allSelectedIdList.size();i++){
             if (allSelectedIdList.get(i).getStatus()){
-                allIds.add(allSelectedIdList.get(i).getId());
-                if(!(allAttributeIds.contains(allSelectedIdList.get(i).getAttribute_id()))){
-                    allAttributeIds.add(allSelectedIdList.get(i).getAttribute_id());
+                try {
+                    System.out.println("getitall" + allSelectedIdList.get(i).getId().substring(0, 3));
+                    allidcheck=allSelectedIdList.get(i).getId().substring(0, 3);
+                }catch (StringIndexOutOfBoundsException e){
+                    System.out.println("Exceptionhere"+e.toString());
+                    allidcheck="none";
+                }
+                if(allidcheck.equals("001")){
+                    System.out.println("printerids"+allSelectedIdList.get(i).getAttribute_id());
+                    allBrandIds.add(allSelectedIdList.get(i).getAttribute_id());
+                }else {
+                    allIds.add(allSelectedIdList.get(i).getId());
+                }
+                if (!(allAttributeIds.contains(allSelectedIdList.get(i).getAttribute_id()))) {
+                    if (allidcheck.equals("001")){
+                        System.out.println("brandidyes" + allSelectedIdList.get(i).getAttribute_id());
+//                            allAttributeIds.add("");
+                    }else {
+                        System.out.println("brandidno" + allSelectedIdList.get(i).getAttribute_id());
+                        allAttributeIds.add(allSelectedIdList.get(i).getAttribute_id());
+                    }
+                    System.out.println("gettingbetterithink"+allSelectedIdList.get(i).getId());
                 }
             }
         }
@@ -853,8 +1049,17 @@ public class Filter extends AppCompatActivity {
             csvBuilder.append(SEPARATOR);
         }
         String csv = csvBuilder.toString();
-        csv = csv.substring(0, csv.length() - SEPARATOR.length());
+        try {
+            csv = csv.substring(0, csv.length() - SEPARATOR.length());
+        }catch (StringIndexOutOfBoundsException e){
+            e.printStackTrace();
+        }
         return csv;
+    }
+    public void arraydismantler(ArrayList<filterLeftItems> gud){
+        for (int i=0;i<gud.size();i++){
+            System.out.println("printingstreak"+gud.get(i).getAttributeId());
+        }
     }
     private boolean isNetworkConnected()
     {
@@ -896,5 +1101,21 @@ public class Filter extends AppCompatActivity {
             status=false;
             return status;
         }
+    }
+    public void showProgress()
+    {
+        pDialog = new ProgressDialog(Filter.this);
+        pDialog.setMessage("Loading");
+        pDialog.setCancelable(false);
+        pDialog.show();
+    }
+    public void cancleProgress()
+    {
+        if(pDialog!=null)
+            pDialoghandler.postDelayed(new Runnable() {
+                public void run() {
+                    pDialog.dismiss();
+                }
+            }, 2000);
     }
 }

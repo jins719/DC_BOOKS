@@ -53,10 +53,10 @@ public class AdddressEdit extends AppCompatActivity {
     int NETCONNECTION;
     Typeface font,font2,font3;
 
-    String state_url="http://athira-pc:8080/dcbooks/api/user/show_states";
-    String country_url="http://athira-pc:8080/dcbooks/api/user/show_countries";
+    String state_url="https://dcbookstore.tk/api/user/show_states";
+    String country_url="https://dcbookstore.tk/api/user/show_countries";
     String addaddress_url;
-    String address_url="http://athira-pc:8080/dcbooks/api/user/address_edit_list";
+    String address_url="https://dcbookstore.tk/api/user/address_edit_list";
     Map<String, String> StateParams = new HashMap<String, String>();
     Map<String, String> DistrictParams = new HashMap<String, String>();
     Map<String, String> UserParams = new HashMap<String, String>();
@@ -336,7 +336,7 @@ public class AdddressEdit extends AppCompatActivity {
         else
         {
 
-                addaddress_url="http://athira-pc:8080/dcbooks/api/user/edit_address";
+                addaddress_url="https://dcbookstore.tk/api/user/edit_address";
                 UserParams.clear();
                 UserParams.put("appkey",MainActivity.appkey);
                 UserParams.put("appsecurity",MainActivity.appsecurity);

@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
@@ -56,7 +58,14 @@ public class ContactUs extends AppCompatActivity {
         contactus_webview.setWebViewClient(webViewClient);
 
         contactus_webview.getSettings().setJavaScriptEnabled(true);
-        contactus_webview.loadUrl("http://www.l10.in/contactus.php");
+        contactus_webview.loadUrl("https://dcbookstore.tk/contactus.html");
+
+        contactus_webview.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
     }
     public class WebClientClass extends WebViewClient {
         ProgressDialog pd = null;

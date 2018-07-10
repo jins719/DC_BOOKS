@@ -11,8 +11,8 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:id="@+id/relativeLayout4">
 
         <android.support.v7.widget.CardView
@@ -21,10 +21,10 @@
             app:cardBackgroundColor="#fff"
             app:cardCornerRadius="0dp"
             app:cardElevation="5dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -43,8 +43,8 @@
 
                 <ImageView
                     android:id="@+id/imageView5"
-                    android:layout_width="420px"
-                    android:layout_height="580px"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
                     android:background="@drawable/imageview_border"
                     android:layout_marginRight="8dp"

@@ -65,6 +65,7 @@
                         android:layout_gravity="right"/>
 
                     <ImageButton
+                        android:id="@+id/topserach"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@mipmap/topiconsearch"
@@ -133,7 +134,7 @@
                     android:background="#f2f2f2">
                 </RelativeLayout>
 
-                <RelativeLayout
+                <LinearLayout
                     android:id="@+id/rl_sec_toolbar"
                     app:layout_behavior="@string/appbar_scrolling_view_behavior"
                     android:layout_width="match_parent"
@@ -142,7 +143,23 @@
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:layout_below="@id/divider"
+                    android:gravity="center_vertical"
                     android:background="#fff">
+
+
+                    <TextView
+                        android:id="@+id/tv_product_count"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:textColor="#000"
+                        android:textSize="16sp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="center_vertical|start" />
 
                     <LinearLayout
                         android:id="@+id/divider_sort_right"
@@ -154,6 +171,8 @@
                         android:layout_toStartOf="@+id/ib_sort"
                         android:background="#d2d2d2"
                         android:orientation="vertical" />
+
+
 
                     <ImageButton
                         android:id="@+id/ib_sort"
@@ -192,20 +211,9 @@
                         android:onClick="filter"
                         android:src="@mipmap/topfiltericon" />
 
-                    <TextView
-                        android:id="@+id/tv_product_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentTop="true"
-                        android:textColor="#000"
-                        android:textSize="16sp"
-                        android:layout_marginLeft="20dp"
-                        android:gravity="center_vertical|start" />
 
-                </RelativeLayout>
+
+                </LinearLayout>
 
                 <RelativeLayout
                     android:id="@+id/divider2"

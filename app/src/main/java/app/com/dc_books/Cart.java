@@ -68,12 +68,12 @@ public class Cart extends AppCompatActivity {
     String ip_head = "http://www.level10boutique.com/";
     String cart_url ="";
 //    String cart_url = ip_head+"admin/services/Appsavecartbag";
-    String cart_delete_url ="http://athira-pc:8080/dcbooks/api/productshopping/remove_from_cart";
-    String promocode_url ="http://athira-pc:8080/dcbooks/api/productshopping/promo_code";
+    String cart_delete_url ="https://dcbookstore.tk/api/productshopping/remove_from_cart";
+    String promocode_url ="https://dcbookstore.tk/api/productshopping/promo_code";
     String wishlist_add_url = ip_head+"admin/services/Appaddwishlist";
     String wishlist_delete_url = ip_head+"admin/services/Appdeletewishlist";
-    String get_qty_dtls_url ="http://athira-pc:8080/dcbooks/api/productshopping/save_bag_edit_list";
-    String quantity_edit = "http://athira-pc:8080/dcbooks/api/productshopping/edit_cart";
+    String get_qty_dtls_url ="https://dcbookstore.tk/api/productshopping/save_bag_edit_list";
+    String quantity_edit = "https://dcbookstore.tk/api/productshopping/update_quantity";
     Toolbar toolbar;
     ArrayList<CartItems> CartArray=new ArrayList<>();
     String CategoryIds,ProductIds;
@@ -87,6 +87,7 @@ public class Cart extends AppCompatActivity {
     String android_id;
     String prod_id="none";
     String Identifier;
+    String producttype,comboofferid,preorderid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,10 +110,13 @@ public class Cart extends AppCompatActivity {
 
         if (extras != null) {
             prod_id = extras.getString("ProductID");
-            stock_qty= extras.getString("Qty");
-            offer_price = extras.getString("OfferPrice");
+           /* stock_qty= extras.getString("Qty");
+            offer_price = extras.getString("OfferPrice");*/
             Identifier = extras.getString("Identifier","none");
-            special_discount = extras.getString("Specialdiscount");
+         /*   special_discount = extras.getString("Specialdiscount");*/
+            producttype=extras.getString("Producttype");
+            comboofferid=extras.getString("offerid");
+            preorderid=extras.getString("prepublicationid");
         }
 
         SharedPreferences s = getSharedPreferences(ProductListing.mp, 0);
@@ -156,23 +160,26 @@ public class Cart extends AppCompatActivity {
         if(NETCONNECTION==1)
         {
             if( Identifier.equals("7") ){
-                cart_url = "http://athira-pc:8080/dcbooks/api/productshopping/show_cart";
+                cart_url = "https://dcbookstore.tk/api/productshopping/show_cart";
                 refreshId="1";
                 CartParams.put("appkey", MainActivity.appkey);
                 CartParams.put("appsecurity", MainActivity.appsecurity);
                 CartParams.put("uniquedevice", android_id);
                 Cart();
             }else {
-                cart_url = "http://athira-pc:8080/dcbooks/api/productshopping/add_to_cart";
+                cart_url = "https://dcbookstore.tk/api/productshopping/add_to_cart";
                 CartParams.put("appkey", MainActivity.appkey);
                 CartParams.put("appsecurity", MainActivity.appsecurity);
                 CartParams.put("user_id", user_id);
                 CartParams.put("product_id", prod_id);
                 CartParams.put("productquantity", "1");
                 CartParams.put("uniquedevice", android_id);
-                CartParams.put("devicetype", "0");
+                CartParams.put("producttype", producttype);
+                CartParams.put("preorderid", preorderid);
+                CartParams.put("comboofferid", comboofferid);
+               /* CartParams.put("devicetype", "0");
                 CartParams.put("discountproductprice", offer_price);
-                CartParams.put("specialdiscount", special_discount);
+                CartParams.put("specialdiscount", special_discount);*/
                 Cart();
             }
         }
@@ -270,8 +277,8 @@ public class Cart extends AppCompatActivity {
             in.putExtra("Identifier","6");
             in.putExtra("totalpayamount",passtotal);
             in.putExtra("vouchername",vouchercode);
-            in.putExtra("voucheramount",discount);
             in.putExtra("subtotal",subtotal);
+            in.putExtra("voucheramount",discount);
             in.putExtra("Weight",totalproweight);
             startActivity(in);
 
@@ -390,14 +397,14 @@ public class Cart extends AppCompatActivity {
             String prodTitle = values.get(position).getProdTitle();
             Log.d("adfasfdaf",prodTitle);
             String mainImgUrl = values.get(position).getMainImg();
-            String badgeImgUrl=ip_head+values.get(position).getBadgeImg();
+            String badgeImgUrl= values.get(position).getBadgeImg();
             String prodPrice = values.get(position).getOfferPric();
             String prodSize = values.get(position).getProdSize();
             final String prodQty = values.get(position).getProdQty();
             final String cartId = values.get(position).getCartId();
             final String prodId = values.get(position).getProdId();
             Log.d("prodidscollect",prodId);
-            final String wishStatus = values.get(position).getWishStatus();
+            final String producttype = values.get(position).getproducttype();
             final String stockQty= values.get(position).getProdStock();
 
             holder.tvProductTitle.setText(prodTitle);
@@ -408,6 +415,8 @@ public class Cart extends AppCompatActivity {
             }
             holder.tvProdQty.setText(prodQty);
             holder.tvProdSize.setText(prodSize);
+
+
 
             Glide.with(Cart.this)
                     .load(mainImgUrl)
@@ -427,6 +436,7 @@ public class Cart extends AppCompatActivity {
                             CartDeleteParams.put("appkey", MainActivity.appkey);
                             CartDeleteParams.put("appsecurity", MainActivity.appsecurity);
                             CartDeleteParams.put("id", values.get(position).getCartId());
+                            CartDeleteParams.put("uniquedevice", android_id);
 //                                remove(position);
 //                                if(getItemCount()<1){
 //                                }
@@ -480,6 +490,9 @@ public class Cart extends AppCompatActivity {
         pDialog.setTitleText("Loading");
         pDialog.setCancelable(true);
         pDialog.show();
+
+        System.out.println("kllllllllllllllll"+new JSONObject(CartParams));
+
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 cart_url, new JSONObject(CartParams),
                 new Response.Listener<JSONObject>() {
@@ -492,10 +505,23 @@ public class Cart extends AppCompatActivity {
 
                         try {
                             JSONObject jsonResponse = new JSONObject(String.valueOf(response));
+
+
+                            if(jsonResponse.has("subtotal"))
+                            {
+                                subtotal=jsonResponse.getString("subtotal");
+                            }
+                            if(jsonResponse.has("amountpayable"))
+                            {
+                                totalproweight=jsonResponse.getString("amountpayable");
+                            }
+
+
+
                             if(refreshId.equals("0")){
                                 resultsArray = jsonResponse.getJSONArray("appsavelist");
                             }else {
-                                resultsArray = jsonResponse.getJSONArray("appbaglist");
+                                resultsArray = jsonResponse.getJSONArray("appsavelist");
                             }
                             String prodCount= String.valueOf(resultsArray.length())+" Products";
 //                            tvProductCount.setText(prodCount);
@@ -511,41 +537,36 @@ public class Cart extends AppCompatActivity {
                             CartArray.clear();
                             for (int i=0; i<resultsArray.length(); i++){
 
-                                String prodId=resultsArray.getJSONObject(i).getString("productid");;
+                                String prodId=resultsArray.getJSONObject(i).getString("product_id");;
                                 String mainImg=resultsArray.getJSONObject(i).getString("productimage");
                                 String prodTitle=resultsArray.getJSONObject(i).getString("productname");
                                 String cartId=resultsArray.getJSONObject(i).getString("id");
                                 String prodQty=resultsArray.getJSONObject(i).getString("selectedquantity");
                                 String offerPric=resultsArray.getJSONObject(i).getString("sellingprice");
-                                String wishStatus=resultsArray.getJSONObject(i).getString("wishliststatus");
+                                String producttype=resultsArray.getJSONObject(i).getString("producttype");
                                 String prodStock=resultsArray.getJSONObject(i).getString("productquantity");
                                 //String prodSize=resultsArray.getJSONObject(i).getString("productsize");
-                               // String badgeImg=resultsArray.getJSONObject(i).getString("badgename");
-                                if (resultsArray.getJSONObject(i).has("subtotal")) {
-                                    subtotal=resultsArray.getJSONObject(i).getString("subtotal");
-                                }
-                                if (resultsArray.getJSONObject(i).has("totalprodductweight")) {
-                                    totalproweight=resultsArray.getJSONObject(i).getString("totalprodductweight");
-                                }
-                                Log.d("wishstatuser",wishStatus);
-                                String categoryId=resultsArray.getJSONObject(i).getString("productcategory");
+                                String badgeImg=resultsArray.getJSONObject(i).getString("badge");
+
+                                Log.d("wishstatuser","");
+                             //   String categoryId=resultsArray.getJSONObject(i).getString("productcategory");
                                 CartItems obj=new CartItems(
                                         prodId,
-                                        "http://athira-pc:8080/dcbooks/"+mainImg,
+                                        "http://dcbookstore.tk/"+mainImg,
                                         prodTitle,
                                         offerPric,
                                         cartId,
-                                        wishStatus,
+                                        producttype,
                                         prodQty,
                                         "",
                                         prodStock,
                                         "",
-                                        ""
+                                        "http://dcbookstore.tk/"+badgeImg
                                 );
                                 if (i==0){
-                                    CategoryIds = categoryId;
+                                   // CategoryIds = categoryId;
                                 }else {
-                                    CategoryIds = CategoryIds+","+categoryId;
+                                  //  CategoryIds = CategoryIds+","+categoryId;
                                 }
                                 if(i==0){
                                     ProductIds = prodId;
@@ -555,7 +576,7 @@ public class Cart extends AppCompatActivity {
                                 CartArray.add(obj);
                             }
                             tv_subtotal.setText("RS. "+getDecimal(subtotal));
-                            tv_paymentamt.setText("RS. "+getDecimal(subtotal));
+                            tv_paymentamt.setText("RS. "+getDecimal(totalproweight));
                             gridManager = new LinearLayoutManager(Cart.this);
                             rv_cartlist.setLayoutManager(gridManager);
                             CartAdapter= new MyAdapter(CartArray);
@@ -626,7 +647,7 @@ public class Cart extends AppCompatActivity {
                                         .setContentText(Message)
                                         .show();
 //
-                                cart_url ="http://athira-pc:8080/dcbooks/api/productshopping/show_cart";
+                                cart_url ="https://dcbookstore.tk/api/productshopping/show_cart";
                                 CartParams.clear();
                                 CartParams.put("appkey", MainActivity.appkey);
                                 CartParams.put("appsecurity", MainActivity.appsecurity);
@@ -936,6 +957,8 @@ public class Cart extends AppCompatActivity {
 //        pDialog.setCancelable(true);
 //        pDialog.show();
 
+        System.out.println("Quantity Edit Responce---> "+QtyEditParams.toString());
+
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 quantity_edit, new JSONObject(QtyEditParams),
                 new Response.Listener<JSONObject>() {
@@ -955,7 +978,7 @@ public class Cart extends AppCompatActivity {
                             if(Status.equals("true"))
                             {
                                 CartAdapter.notifyDataSetChanged();
-                                cart_url ="http://athira-pc:8080/dcbooks/api/productshopping/show_cart";
+                                cart_url ="https://dcbookstore.tk/api/productshopping/show_cart";
                                 CartParams.clear();
                                 CartParams.put("appkey", MainActivity.appkey);
                                 CartParams.put("appsecurity", MainActivity.appsecurity);
@@ -1094,15 +1117,15 @@ public class Cart extends AppCompatActivity {
     }
 
     public class CartItems {
-        String prodId, mainImg, prodTitle, offerPric, cartId, wishStatus,prodQty,categoryId,prodStock,prodSize,badgeImg;
+        String prodId, mainImg, prodTitle, offerPric, cartId, producttype,prodQty,categoryId,prodStock,prodSize,badgeImg;
 
-        public CartItems(String prodId, String mainImg, String prodTitle, String offerPric,String cartId,String wishStatus,String prodQty,String categoryId,String prodStock,String prodSize,String badgeImg) {
+        public CartItems(String prodId, String mainImg, String prodTitle, String offerPric,String cartId,String ProductType,String prodQty,String categoryId,String prodStock,String prodSize,String badgeImg) {
             this.prodId = prodId;
             this.mainImg = mainImg;
             this.prodTitle = prodTitle;
             this.offerPric = offerPric;
             this.cartId = cartId;
-            this.wishStatus= wishStatus;
+            this.producttype= ProductType;
             this.prodQty=prodQty;
             this.categoryId=categoryId;
             this.prodStock=prodStock;
@@ -1130,16 +1153,12 @@ public class Cart extends AppCompatActivity {
             return cartId;
         }
 
-        public String getWishStatus() {
-            return wishStatus;
+        public String getproducttype() {
+            return producttype;
         }
 
         public String getProdQty() {
             return prodQty;
-        }
-
-        public void setWishStatus(String wishStatus) {
-            this.wishStatus = wishStatus;
         }
 
         public String getProdStock() {

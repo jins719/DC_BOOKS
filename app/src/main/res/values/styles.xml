@@ -6,13 +6,18 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:navigationBarColor" tools:targetApi="21">#2d8e47</item>
+
 
     </style>
 
     <style name="RatingBar" parent="Theme.AppCompat">
         <item name="colorControlNormal">#a99f9f</item>
         <item name="colorControlActivated">#4bba32</item>
+    </style>
+
+    <style name="NavigationView" parent="Theme.AppCompat.CompactMenu" >
+        <item name="android:listDivider">@color/green</item>
+
     </style>
 
 

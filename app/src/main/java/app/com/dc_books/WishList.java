@@ -46,8 +46,8 @@ public class WishList extends AppCompatActivity {
     Map<String, String> WishListParams = new HashMap<>();
     Map<String, String> WishListDeleteParams = new HashMap<>();
     String ip_head = "http://www.level10boutique.com/";
-    String wish_list_url = ip_head + "admin/services/Appwishlistview";
-    String wish_list_remove_url = ip_head + "admin/services/Appdeletewishlist";
+    String wish_list_url ="https://dcbookstore.tk/api/wishlist/view";
+    String wish_list_remove_url ="https://dcbookstore.tk/api/wishlist/remove";
     ArrayList<WishListItems> WishListArray = new ArrayList<>();
     TextView tv_wishListTitle;
     MyAdapter wishlistAdapter;
@@ -60,6 +60,7 @@ public class WishList extends AppCompatActivity {
     int SearchlayoutVisibleState = 0;
     SearchView et_search;
     ImageButton ib_profile;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,12 +95,12 @@ public class WishList extends AppCompatActivity {
         SharedPreferences s = getSharedPreferences(WishList.mp, 0);
          user_id = s.getString("User_id", "");
 
-        WishListParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-        WishListParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+        WishListParams.put("appkey", MainActivity.appkey);
+        WishListParams.put("appsecurity", MainActivity.appsecurity);
         WishListParams.put("user_id", user_id);
 
-        WishListDeleteParams.put("appkey", "TGV2ZWwtMTBzZWN1cml0eWtleTIwMTc");
-        WishListDeleteParams.put("appsecurity", "TGV2ZWwtMTBzZWN1cml0eWNoZWNrMjAxNw==");
+        WishListDeleteParams.put("appkey", MainActivity.appkey);
+        WishListDeleteParams.put("appsecurity", MainActivity.appsecurity);
         WishListDeleteParams.put("user_id", user_id);
 
         et_search.clearFocus();
@@ -208,9 +209,27 @@ public class WishList extends AppCompatActivity {
                 btBuy.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent in = new Intent(WishList.this, ProductDetails.class);
-                        in.putExtra("ProdID", values.get(getAdapterPosition()).getProdId());
-                        startActivity(in);
+
+                        if(values.get(getAdapterPosition()).getprod_type().equals("1")|| values.get(getAdapterPosition()).getprod_type().equals("3"))
+                        {
+                            Intent in = new Intent(WishList.this, ProductDetails.class);
+                            in.putExtra("ProdID", values.get(getAdapterPosition()).getProdId());
+                            startActivity(in);
+                        }
+                        else if(values.get(getAdapterPosition()).getprod_type().equals("4"))
+                        {
+                            Intent in = new Intent(WishList.this, Bundleoffer_details.class);
+                            in.putExtra("ProdID", values.get(getAdapterPosition()).getProdId());
+                            startActivity(in);
+                        }
+                        else
+                        {
+                            Intent in = new Intent(WishList.this, GiftandToys.class);
+                            in.putExtra("ProdID", values.get(getAdapterPosition()).getProdId());
+                            startActivity(in);
+                        }
+
+
                     }
                 });
             }
@@ -251,7 +270,7 @@ public class WishList extends AppCompatActivity {
             // - get element from your dataset at this position
             // - replace the contents of the view with that element
             String prodTitle = values.get(position).getProdTitle();
-            String mainImgUrl = ip_head + values.get(position).getMainImg();
+            String mainImgUrl = values.get(position).getMainImg();
             String prodPrice = values.get(position).getProdPrice();
             String status=values.get(position).getPstatus();
             String stock=values.get(position).getPstock();
@@ -263,9 +282,9 @@ public class WishList extends AppCompatActivity {
             holder.tvProdPrice.setTypeface(custom_bold);
             holder.btBuy.setTypeface(custom_bold);
 
-            if(stock.equals("1")&&status.equals("1")){
+            if(stock.equals("1")){
                 holder.btBuy.setText("BUY NOW");
-            }else if(stock.equals("0")&&status.equals("1")){
+            }else if(stock.equals("0")){
                 holder.btBuy.setText("OUT OF STOCK");
                 holder.btBuy.setClickable(false);
             }else{
@@ -280,6 +299,7 @@ public class WishList extends AppCompatActivity {
             holder.ibCloseButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    WishListDeleteParams.put("producttype", values.get(position).getprod_type());
                     WishListDeleteParams.put("product_id", values.get(position).getProdId());
                     WishlistDelete();
                     remove(position);
@@ -305,6 +325,8 @@ public class WishList extends AppCompatActivity {
         pDialog.setCancelable(true);
         pDialog.show();
 
+        System.out.print("Woooooooooooo"+new JSONObject(WishListParams));
+
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 wish_list_url, new JSONObject(WishListParams),
                 new Response.Listener<JSONObject>() {
@@ -317,7 +339,7 @@ public class WishList extends AppCompatActivity {
 
                         try {
                             JSONObject jsonResponse = new JSONObject(String.valueOf(response));
-                            JSONArray resultsArray = jsonResponse.getJSONArray("wishviewlist");
+                            JSONArray resultsArray = jsonResponse.getJSONArray("wishlist");
 //                            String prodCount= String.valueOf(resultsArray.length())+" Products";
 //                            tvProductCount.setText(prodCount);
                             //Test
@@ -333,16 +355,18 @@ public class WishList extends AppCompatActivity {
                                 String mainImg=resultsArray.getJSONObject(i).getString("image");
                                 String prodTitle=resultsArray.getJSONObject(i).getString("productname");
                                 String prodPrice=resultsArray.getJSONObject(i).getString("sellingprice");
-                                String status=resultsArray.getJSONObject(i).getString("status");
-                                String stock=resultsArray.getJSONObject(i).getString("stock");
+                               // String status=resultsArray.getJSONObject(i).getString("status");
+                                String stock=resultsArray.getJSONObject(i).getString("stock_status");
+                                String product_type=resultsArray.getJSONObject(i).getString("producttype");
                                 WishListItems obj=new WishListItems(
                                         id,
                                         prodId,
-                                        mainImg,
+                                        "http://dcbookstore.tk/"+mainImg,
                                         prodTitle,
                                         prodPrice,
-                                        status,
-                                        stock
+                                        "",
+                                        stock,
+                                        product_type
                                 );
                                 WishListArray.add(obj);
                             }
@@ -494,9 +518,9 @@ public class WishList extends AppCompatActivity {
     }
 
     public class WishListItems{
-        String id,prodId,mainImg,prodTitle,prodPrice,pstock,pstatus;
+        String id,prodId,mainImg,prodTitle,prodPrice,pstock,pstatus,prod_type;
 
-        public WishListItems(String id,String prodId, String mainImg, String prodTitle, String prodPrice,String pstatus,String pstock) {
+        public WishListItems(String id,String prodId, String mainImg, String prodTitle, String prodPrice,String pstatus,String pstock,String Prod_type) {
             this.id = id;
             this.prodId = prodId;
             this.mainImg = mainImg;
@@ -504,6 +528,7 @@ public class WishList extends AppCompatActivity {
             this.prodPrice = prodPrice;
             this.pstatus=pstatus;
             this.pstock=pstock;
+            this.prod_type=Prod_type;
         }
 
         public String getProdId() {
@@ -532,6 +557,9 @@ public class WishList extends AppCompatActivity {
 
         public String getPstatus() {
             return pstatus;
+        }
+        public String getprod_type() {
+            return prod_type;
         }
     }
     private boolean isNetworkConnected()

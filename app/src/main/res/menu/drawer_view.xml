@@ -1,63 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity">
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single"
-        android:id="@+id/grp1"
-     >
+    <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:title="Home"
-            />
-        </group>
-
-    <group android:checkableBehavior="single"
-        android:id="@+id/grp13"
-        >
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="Home"/>
         <item
-            android:id="@+id/shop_category"
-            android:title="Shop by Category" />
+            android:id="@+id/giftandtoys"
+            android:icon="@drawable/ic_card_giftcard_black_24dp"
+            android:title="@string/giftandtoys"/>
     </group>
 
     <group android:checkableBehavior="single"
-        android:id="@+id/grp2"
-      >
+           android:id="@+id/grp1">
+        <item
+            android:id="@+id/shop_category"
+            android:icon="@drawable/ic_shopping_basket_black_24dp"
+            android:title="Shop By Category"/>
+        <item
+            android:id="@+id/bundle"
+            android:icon="@drawable/ic_local_offer_black_24dp"
+            android:title="Bundle Offers"/>
+        <item
+            android:id="@+id/preorder"
+            android:icon="@drawable/ic_settings_backup_restore_black_24dp"
+            android:title="Pre-Order"/>
+        <item
+            android:id="@+id/top10"
+            android:icon="@drawable/ic_border_top_black_24dp"
+            android:title="DC Top 100"/>
+
+        <item
+            android:id="@+id/award_winners"
+            android:icon="@drawable/ic_card_membership_black_24dp"
+            android:title="Award Winners"/>
+        <item
+            android:id="@+id/email_gift_voucher"
+            android:icon="@drawable/ic_email_black_24dp"
+            android:title="Email Gift Vouchers"/>
+
+    </group>
+    <group android:checkableBehavior="single"
+           android:id="@+id/grp3">
         <item
             android:id="@+id/order"
-            android:title="Your Order" />
-        </group>
-     <group android:checkableBehavior="single"
-      android:id="@+id/grp3">
-        <item
-            android:id="@+id/wishlist"
-            android:title="Your Wishlist" />
-        </group>
-    <group android:checkableBehavior="single"
-        android:id="@+id/grp4"
-           >
-        <item
-            android:id="@+id/about"
-            android:title="About Us" />
-        </group>
-    <group android:checkableBehavior="single"
-       android:id="@+id/grp5">
-        <item
-            android:id="@+id/contactus"
-            android:title="Contact Us" />
-        </group>
+            android:icon="@drawable/ic_library_books_black_24dp"
+            android:title="Your Orders"/>
 
-    <group android:checkableBehavior="single"
-       android:id="@+id/grp7">
         <item
             android:id="@+id/notification"
+            android:icon="@drawable/ic_notifications_black_24dp"
             android:title="Notifications" />
-        </group>
+
+        <item
+            android:id="@+id/wishlist"
+            android:icon="@drawable/ic_favorite_black_24dp"
+            android:title="Your Wishlist"/>
+    </group>
+
     <group android:checkableBehavior="single"
-       android:id="@+id/grp8">
+           android:id="@+id/grp2">
+        <item
+            android:id="@+id/about"
+            android:icon="@drawable/ic_perm_device_information_black_24dp"
+            android:title="About Us"/>
+
+        <item
+            android:id="@+id/contactus"
+            android:icon="@drawable/ic_perm_contact_calendar_black_24dp"
+            android:title="Contact Us" />
         <item
             android:id="@+id/shipping_and_privacy"
-            android:title="Shipping and Privacy" />
-        </group>
+            android:icon="@drawable/ic_local_shipping_black_24dp"
+            android:title="@string/Shipping" />
+    </group>
 
 </menu>

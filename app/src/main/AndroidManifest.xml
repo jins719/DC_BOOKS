@@ -22,6 +22,11 @@
         tools:replace="android:icon,allowBackup">
 
 
+        <activity
+            android:name=".EmipayDetails"
+            android:theme="@android:style/Theme.Dialog"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan"/>
 
         <activity
             android:name=".OrderlistDetails"

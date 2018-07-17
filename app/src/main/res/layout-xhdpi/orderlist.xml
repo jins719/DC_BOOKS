@@ -129,7 +129,7 @@
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
-            android:textSize="15dp"
+            android:textSize="16dp"
             app:layout_scrollFlags="snap"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"

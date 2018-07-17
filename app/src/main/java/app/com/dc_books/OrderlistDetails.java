@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -26,6 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,6 +55,8 @@ public class OrderlistDetails extends AppCompatActivity {
     SharedPreferences.Editor edit;
     public static final String mp = "";
 
+    RelativeLayout rtv_searchlayout;
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +76,8 @@ public class OrderlistDetails extends AppCompatActivity {
         }
 
         rcv_orderlist=findViewById(R.id.recycleview);
+        rtv_searchlayout=findViewById(R.id.relativeLayout2);
+        rtv_searchlayout.setVisibility(View.GONE);
 
         sp = getSharedPreferences(mp, 0);
         edit = sp.edit();
@@ -88,13 +94,21 @@ public class OrderlistDetails extends AppCompatActivity {
 
     private void Call_OrderList() {
 
+
+        final SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Loading");
+        pDialog.setCancelable(true);
+        pDialog.show();
+        System.out.println("cccccccc "+new JSONObject(OrderParams));
+
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 "https://dcbookstore.tk/api/order/order_details", new JSONObject(OrderParams),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         System.out.println("cccccccc "+response.toString());
-
+                        pDialog.dismissWithAnimation();
 
                         try {
                             JSONObject jsonResponse = new JSONObject(response.toString());
@@ -111,8 +125,11 @@ public class OrderlistDetails extends AppCompatActivity {
                                 String date = jsonChild.getString("date");
                                 String price = jsonChild.getString("sellingprice");
                                 String image= "https://dcbookstore.tk/"+jsonChild.getString("image");
+                                String emistatus=jsonChild.getString("emistatus");
+                                String productqty=jsonChild.getString("product_quantity");
+                                String preorderid=jsonChild.getString("preorderid");
 
-                                ItemData itemsData = new ItemData(id,productname,orderstatusname,orderstatus,date,image,price);
+                                ItemData itemsData = new ItemData(id,productname,orderstatusname,orderstatus,date,image,price,emistatus,productqty,preorderid);
                                 arraylist.add(itemsData);
 
                             }
@@ -158,7 +175,8 @@ public class OrderlistDetails extends AppCompatActivity {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                // pDialog.dismiss();
+                 pDialog.dismiss();
+                System.out.println("cccccccc "+error.toString());
             }
         });
 
@@ -170,8 +188,8 @@ public class OrderlistDetails extends AppCompatActivity {
     }
     public class ItemData {
 
-        String id,productname,orderstatusname,orderstatus,date,image,price;
-        public ItemData(String ID,String ProductName,String Orderstatusname,String Orderstatus,String Date,String Image,String Price){
+        String id,productname,orderstatusname,orderstatus,date,image,price,emistatus,product_qty,preorderid;
+        public ItemData(String ID,String ProductName,String Orderstatusname,String Orderstatus,String Date,String Image,String Price,String EmiStatus,String Product_qty,String Preorderid){
 
             this.id = ID;
             this.productname = ProductName;
@@ -180,6 +198,10 @@ public class OrderlistDetails extends AppCompatActivity {
             this.date = Date;
             this.image = Image;
             this.price = Price;
+            this.emistatus=EmiStatus;
+            this.product_qty=Product_qty;
+            this.preorderid=Preorderid;
+
 
         }
         public String getid()
@@ -209,6 +231,18 @@ public class OrderlistDetails extends AppCompatActivity {
         public String getprice()
         {
             return this.price;
+        }
+        public String getemistatus()
+        {
+            return this.emistatus;
+        }
+        public String getproduct_qty()
+        {
+            return this.product_qty;
+        }
+        public String getpreorderid()
+        {
+            return this.preorderid;
         }
 
 
@@ -252,18 +286,22 @@ public class OrderlistDetails extends AppCompatActivity {
                 viewHolder.orderstatus.setTextColor(Color.parseColor("#008000"));
               //  viewHolder.date.setTextColor(Color.parseColor("#008000"));
             }
-            else if(orderlist.get(position).getorderstatus().equals("1"))
+            else if(orderlist.get(position).getemistatus().equals("0"))
             {
                 viewHolder.orderstatus.setTextColor(Color.parseColor("#008000"));
-               // viewHolder.date.setTextColor(Color.parseColor("#008000"));
-                viewHolder.view.setVisibility(View.GONE);
+                viewHolder.view.setBackgroundColor(Color.parseColor("#cccccc"));
+                viewHolder.view.setVisibility(View.VISIBLE);
+                viewHolder.view.setText("Fully paid");
+                viewHolder.view.setEnabled(false);
+
 
             }
             else
             {
                 viewHolder.orderstatus.setTextColor(Color.parseColor("#008000"));
-                //viewHolder.date.setTextColor(Color.parseColor("#ff0000"));
-                viewHolder.view.setVisibility(View.GONE);
+                viewHolder.view.setVisibility(View.VISIBLE);
+                viewHolder.view.setText("Pay");
+                viewHolder.view.setEnabled(true);
             }
 
             DecimalFormat df = new DecimalFormat("#0.00");
@@ -272,9 +310,11 @@ public class OrderlistDetails extends AppCompatActivity {
             viewHolder.productname.setText(orderlist.get(position).getproductname());
             viewHolder.orderstatus.setText(orderlist.get(position).getorderstatusname());
             viewHolder.date.setText(orderlist.get(position).getdate());
+            viewHolder.qty.setText("Qty : "+orderlist.get(position).getproduct_qty());
             viewHolder.price.setText("Rs. "+ String.valueOf(df.format(Double.parseDouble(orderlist.get(position).getprice()))));
+
             Glide.with(OrderlistDetails.this)
-                    .load(orderlist.get(position).getimage()).into(viewHolder.product_img);
+                    .load(orderlist.get(position).getimage()).apply(new RequestOptions().override(300, 300)).into(viewHolder.product_img);
 
 
 
@@ -284,7 +324,7 @@ public class OrderlistDetails extends AppCompatActivity {
         // inner class to hold a reference to each item of RecyclerView
         public class ViewHolder extends RecyclerView.ViewHolder {
 
-            public TextView productname,orderstatus,date,price;
+            public TextView productname,orderstatus,date,price,qty;
             public ImageView product_img;
             public Button view;
 
@@ -298,6 +338,7 @@ public class OrderlistDetails extends AppCompatActivity {
                 date=itemLayoutView.findViewById(R.id.textView40);
                 price=itemLayoutView.findViewById(R.id.textView73);
                 product_img=itemLayoutView.findViewById(R.id.imageView15);
+                qty=itemLayoutView.findViewById(R.id.qty);
                 view=itemLayoutView.findViewById(R.id.button8);
 
 
@@ -305,7 +346,8 @@ public class OrderlistDetails extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
 
-                        Intent in=new Intent(OrderlistDetails.this,OrderlistDetails.class);
+                        Intent in=new Intent(OrderlistDetails.this,EmipayDetails.class);
+                        in.putExtra("PreOrder",orderlist.get(getAdapterPosition()).getpreorderid());
                         startActivity(in);
                     }
                 });

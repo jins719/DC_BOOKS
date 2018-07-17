@@ -88,6 +88,7 @@ public class Cart extends AppCompatActivity {
     String prod_id="none";
     String Identifier;
     String producttype,comboofferid,preorderid;
+    String emistatus;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +118,7 @@ public class Cart extends AppCompatActivity {
             producttype=extras.getString("Producttype");
             comboofferid=extras.getString("offerid");
             preorderid=extras.getString("prepublicationid");
+            emistatus=extras.getString("Emistatus");
         }
 
         SharedPreferences s = getSharedPreferences(ProductListing.mp, 0);
@@ -177,6 +179,7 @@ public class Cart extends AppCompatActivity {
                 CartParams.put("producttype", producttype);
                 CartParams.put("preorderid", preorderid);
                 CartParams.put("comboofferid", comboofferid);
+                CartParams.put("emi", emistatus);
                /* CartParams.put("devicetype", "0");
                 CartParams.put("discountproductprice", offer_price);
                 CartParams.put("specialdiscount", special_discount);*/

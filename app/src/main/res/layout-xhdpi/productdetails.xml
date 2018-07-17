@@ -111,6 +111,7 @@
 
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nestedScrollView3"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/button"
@@ -261,19 +262,19 @@
 
                     <com.iarcuschin.simpleratingbar.SimpleRatingBar
                         android:id="@+id/ratingbar"
-                        style ="?android:attr/ratingBarStyleSmall"
+                        style="?android:attr/ratingBarStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/textView8"
 
                         android:layout_marginLeft="10dp"
                         android:layout_marginTop="10dp"
-                        app:srb_starSize="25dp"
-                        app:srb_numberOfStars="5"
-                        app:srb_stepSize="0.5"
-                        app:srb_starBorderWidth="1"
                         app:srb_borderColor="#130c0c"
                         app:srb_fillColor="#edbb15"
+                        app:srb_numberOfStars="5"
+                        app:srb_starBorderWidth="1"
+                        app:srb_starSize="25dp"
+                        app:srb_stepSize="0.5"
 
                         />
 
@@ -282,78 +283,135 @@
                         android:id="@+id/coveringlayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_below="@+id/ratingbar"
                         android:layout_marginTop="10dp"
-                        android:gravity="center_vertical"
-                        android:layout_below="@+id/ratingbar">
+                        android:gravity="center_vertical">
 
 
                         <Button
                             android:id="@+id/paperback"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginLeft="10dp"
-                            android:textColor="#604E05"
-                            android:textSize="12dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/coveringlayout_background"
                             android:elevation="5dp"
                             android:gravity="center_horizontal|center_vertical"
-                            android:background="@drawable/coveringlayout_background"
-                            android:text=""/>
+                            android:text=""
+                            android:textColor="#604E05"
+                            android:textSize="12dp"/>
 
                         <Button
                             android:id="@+id/usedbook"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginLeft="10dp"
-                            android:textColor="#604E05"
-                            android:textSize="12dp"
-                            android:elevation="5dp"
+                            android:layout_weight="1"
                             android:background="@drawable/coveringlayout_background"
-                            android:text=""/>
+                            android:elevation="5dp"
+                            android:text=""
+                            android:textColor="#604E05"
+                            android:textSize="12dp"/>
 
                         <Button
                             android:id="@+id/hardcover"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginRight="10dp"
                             android:layout_marginLeft="10dp"
-                            android:textColor="#604E05"
-                            android:textSize="12dp"
-                            android:elevation="5dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_weight="1"
                             android:background="@drawable/coveringlayout_background"
-                            android:text=""/>
+                            android:elevation="5dp"
+                            android:text=""
+                            android:textColor="#604E05"
+                            android:textSize="12dp"/>
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/linear5"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_below="@+id/coveringlayout"
                         android:layout_marginBottom="10dp"
-                        android:layout_marginTop="10dp"
                         android:layout_marginRight="10dp"
-                        android:gravity="center_vertical"
-                        android:layout_below="@+id/coveringlayout">
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical">
 
                         <Button
                             android:id="@+id/ebook"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
                             android:layout_weight="1"
                             android:background="@drawable/ebook"
-                            android:layout_marginLeft="10dp"
-                            android:textColor="#659512"
-                            android:text="EBOOK"/>
+                            android:text="EBOOK"
+                            android:textColor="#659512"/>
 
                         <Button
                             android:id="@+id/audiobook"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginLeft="10dp"
-                            android:textColor="#15839B"
+                            android:layout_weight="1"
                             android:background="@drawable/audiobook"
-                            android:text="AUDIO BOOK"/>
+                            android:text="AUDIO BOOK"
+                            android:textColor="#15839B"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/linear8"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@+id/linear5"
+                        android:layout_marginTop="0dp">
+
+                        <TextView
+                            android:id="@+id/textView67"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_weight="1"
+                            android:text="Payment"
+                            android:textColor="#719200"
+                            android:textSize="16dp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/linear6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@+id/linear8"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="5dp">
+
+
+                        <RadioGroup
+                            android:id="@+id/radioemi"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/radioButton4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:text="Emi"/>
+
+                            <RadioButton
+                                android:id="@+id/radioButton3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:checked="true"
+                                android:text="Full payment"/>
+                        </RadioGroup>
                     </LinearLayout>
 
 
@@ -404,9 +462,9 @@
                         android:id="@+id/linear2"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:orientation="horizontal"
+                        android:layout_below="@+id/linear1"
                         android:background="#ddd"
-                        android:layout_below="@+id/linear1">
+                        android:orientation="horizontal">
                     </LinearLayout>
 
 
@@ -414,8 +472,8 @@
                         android:id="@+id/linear3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_below="@+id/linear2">
+                        android:layout_below="@+id/linear2"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/textView46"
@@ -433,24 +491,24 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_below="@+id/linear3"
                         android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:layout_alignParentLeft="true">
+                        android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/textView9"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
+                            android:layout_marginBottom="10dp"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="10dp"
                             android:layout_marginTop="10dp"
+                            android:layout_weight="1"
+                            android:text="TextView"
                             android:textColor="#289d19"
-                            android:textSize="16dp"
-                            android:layout_marginBottom="10dp"
-                            android:text="TextView"/>
+                            android:textSize="16dp"/>
                     </LinearLayout>
 
 
@@ -466,7 +524,7 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:nestedScrollingEnabled="false"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="2dp"
@@ -794,14 +852,14 @@
                         android:id="@+id/T_multimedia"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/textView10"
                         android:layout_alignStart="@+id/textView10"
-                        android:layout_marginTop="10dp"
-                        android:textColor="#000"
-                        android:textStyle="bold"
-                        android:textSize="16dp"
                         android:layout_below="@+id/publishingdate"
+                        android:layout_marginTop="10dp"
                         android:text="Multimedia : "
-                        android:layout_alignLeft="@+id/textView10"/>
+                        android:textColor="#000"
+                        android:textSize="16dp"
+                        android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/multimedia"
@@ -827,7 +885,7 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:nestedScrollingEnabled="false"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="2dp"
@@ -873,10 +931,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignTop="@+id/productnameheading"
                         android:layout_marginRight="10dp"
-                        android:textSize="16dp"
                         android:layout_toEndOf="@+id/productnameheading"
                         android:layout_toRightOf="@+id/productnameheading"
-                        android:text=""/>
+                        android:text=""
+                        android:textSize="16dp"/>
 
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/ti_title"
@@ -914,12 +972,12 @@
                         android:layout_marginBottom="10dp"
                         android:layout_marginLeft="10dp"
                         android:layout_marginTop="8dp"
-                        app:srb_starSize="25dp"
-                        app:srb_stepSize="0.5"
-                        app:srb_numberOfStars="5"
-                        app:srb_starBorderWidth="1"
                         app:srb_borderColor="#130c0c"
                         app:srb_fillColor="#edbb15"
+                        app:srb_numberOfStars="5"
+                        app:srb_starBorderWidth="1"
+                        app:srb_starSize="25dp"
+                        app:srb_stepSize="0.5"
                         />
 
                     <android.support.design.widget.TextInputLayout
@@ -961,6 +1019,29 @@
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v4.widget.NestedScrollView>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/relativeLayout2"
+        app:layout_constraintVertical_bias="0.95"
+        android:src="@drawable/ic_share_black_24dp"
+        tools:ignore="VectorDrawableCompat"/>
+
 
     <ImageButton
         android:id="@+id/button"

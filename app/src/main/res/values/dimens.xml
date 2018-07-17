@@ -2,4 +2,5 @@
 <resources>
     <dimen name="login_form_padding">20dp</dimen>
     <dimen name="spacing">0dp</dimen>
+    <dimen name="action_button_margin">56dp</dimen>
 </resources>

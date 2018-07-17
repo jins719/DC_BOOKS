@@ -10,10 +10,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
@@ -25,6 +27,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -118,6 +123,19 @@ public class ProductDetails extends AppCompatActivity {
     TextView t_titleofproductheading,t_productdec;
 
     TextView t_combooffer;
+    TextView t_paymenttxt;
+
+    LinearLayout ln_emipayment;
+    LinearLayout ln_emipaymenttxt;
+
+    String Emistatus="0";
+
+    RadioGroup rg_emi;
+    RadioButton rb_emi,rb_fullpayment;
+
+    NestedScrollView nestedScrollView;
+
+    FloatingActionButton floatingActionButton;
 
 
 
@@ -136,6 +154,8 @@ public class ProductDetails extends AppCompatActivity {
             Bundle t=getIntent().getExtras();
             product_id=t.getString("ProdID");
         }
+
+        System.out.println("Brand type value"+ MainActivity.Brand_Type);
 
         sp = getSharedPreferences(mp, 0);
         edit = sp.edit();
@@ -171,6 +191,7 @@ public class ProductDetails extends AppCompatActivity {
         t_yourrating=findViewById(R.id.yourrating);
         t_combooffer=findViewById(R.id.textView9);
         t_mutimedia=findViewById(R.id.multimedia);
+        t_paymenttxt=findViewById(R.id.textView67);
 
         T_book=findViewById(R.id.T_book);
         T_author=findViewById(R.id.T_author);
@@ -184,10 +205,16 @@ public class ProductDetails extends AppCompatActivity {
         T_language=findViewById(R.id.T_language);
         T_mutimedia=findViewById(R.id.T_multimedia);
 
+        floatingActionButton=findViewById(R.id.floatingActionButton);
+        nestedScrollView=findViewById(R.id.nestedScrollView3);
+
         ti_title=findViewById(R.id.ti_title);
         ti_message=findViewById(R.id.ti_message);
         te_title=findViewById(R.id.te_title);
         te_message=findViewById(R.id.te_message);
+
+        ln_emipayment=findViewById(R.id.linear6);
+        ln_emipaymenttxt=findViewById(R.id.linear8);
 
         b_ebook=findViewById(R.id.ebook);
         b_audiobook=findViewById(R.id.audiobook);
@@ -207,6 +234,10 @@ public class ProductDetails extends AppCompatActivity {
         rtv_searchlayout=findViewById(R.id.relativeLayout2);
         et_search=findViewById(R.id.editText);
         ib_wishlist=findViewById(R.id.button_previous);
+        rg_emi=findViewById(R.id.radioemi);
+        rb_emi=findViewById(R.id.radioButton4);
+        rb_fullpayment=findViewById(R.id.radioButton3);
+
         et_search.clearFocus();
         et_search.setQueryHint("What are you looking for?");
         badgeview=findViewById(R.id.imageView2);
@@ -214,6 +245,8 @@ public class ProductDetails extends AppCompatActivity {
         cardView2=findViewById(R.id.cardview2);
         cardView2.setVisibility(View.INVISIBLE);
         t_combooffer.setVisibility(View.GONE);
+        ln_emipayment.setVisibility(View.GONE);
+        ln_emipaymenttxt.setVisibility(View.GONE);
 
 
 
@@ -265,6 +298,9 @@ public class ProductDetails extends AppCompatActivity {
         t_productdec.setTypeface(font);
         t_mutimedia.setTypeface(font);
 
+        rb_emi.setTypeface(font);
+        rb_fullpayment.setTypeface(font);
+
 
         T_book.setTypeface(font3);
         T_author.setTypeface(font3);
@@ -278,6 +314,7 @@ public class ProductDetails extends AppCompatActivity {
         T_mutimedia.setTypeface(font3);
         t_combooffer.setTypeface(font3);
         T_language.setTypeface(font3);
+        t_paymenttxt.setTypeface(font3);
 
         b_ebook.setTypeface(font3);
         b_audiobook.setTypeface(font3);
@@ -382,6 +419,7 @@ public class ProductDetails extends AppCompatActivity {
 
                 ProductParams.put("producttype","1");
                 ProductParams.put("product_id",paperbackid);
+                product_id=paperbackid;
                 b_paperback.setBackgroundResource(R.drawable.coveringlayout_selection);
                 b_usedbooks.setBackgroundResource(R.drawable.coveringlayout_background);
                 b_hardcover.setBackgroundResource(R.drawable.coveringlayout_background);
@@ -396,6 +434,7 @@ public class ProductDetails extends AppCompatActivity {
 
                 ProductParams.put("producttype","3");
                 ProductParams.put("product_id",usedbookid);
+                product_id=usedbookid;
                 b_paperback.setBackgroundResource(R.drawable.coveringlayout_background);
                 b_usedbooks.setBackgroundResource(R.drawable.coveringlayout_selection);
                 b_hardcover.setBackgroundResource(R.drawable.coveringlayout_background);
@@ -410,6 +449,7 @@ public class ProductDetails extends AppCompatActivity {
 
                 ProductParams.put("producttype","1");
                 ProductParams.put("product_id",hardcoverid);
+                product_id=hardcoverid;
                 b_paperback.setBackgroundResource(R.drawable.coveringlayout_background);
                 b_usedbooks.setBackgroundResource(R.drawable.coveringlayout_background);
                 b_hardcover.setBackgroundResource(R.drawable.coveringlayout_selection);
@@ -439,6 +479,32 @@ public class ProductDetails extends AppCompatActivity {
             }
         });
 
+        rg_emi.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radioButton4) {
+                    Emistatus="1";
+                } else {
+                    Emistatus="0";
+                }
+            }
+        });
+
+
+        if(MainActivity.Brand_Type==6)
+        {
+            ln_emipayment.setVisibility(View.VISIBLE);
+            ln_emipaymenttxt.setVisibility(View.VISIBLE);
+            Emistatus="0";
+        }
+        else
+        {
+            ln_emipayment.setVisibility(View.GONE);
+            ln_emipaymenttxt.setVisibility(View.GONE);
+            Emistatus="0";
+        }
+
 
         if(userID.equals(""))
         {
@@ -449,6 +515,17 @@ public class ProductDetails extends AppCompatActivity {
         {
             img_account.setImageResource(R.mipmap.topicon04);
         }
+
+        nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY > oldScrollY) {
+                    floatingActionButton.hide();
+                } else {
+                    floatingActionButton.show();
+                }
+            }
+        });
 
     }
 
@@ -513,6 +590,7 @@ public class ProductDetails extends AppCompatActivity {
         in.putExtra("Producttype",product_type);
         in.putExtra("prepublicationid",prepublicationid);
         in.putExtra("offerid",offerid);
+        in.putExtra("Emistatus",Emistatus);
         startActivity(in);
 
     }
@@ -723,7 +801,7 @@ public class ProductDetails extends AppCompatActivity {
                                 {
                                     ProductParams.put("is_used_book", "false");
                                     // default selection background color set on paperback button
-                                    b_paperback.setBackgroundResource(R.drawable.coveringlayout_selection);
+                                   // b_paperback.setBackgroundResource(R.drawable.coveringlayout_selection);
                                 }
                                 else
                                 {
@@ -735,7 +813,7 @@ public class ProductDetails extends AppCompatActivity {
                                     if(hardcover_available.equals("false") && paperback.equals("false"))
                                     {
                                         ProductParams.put("is_used_book", "true");
-                                        b_usedbooks.setBackgroundResource(R.drawable.coveringlayout_selection);
+                                      //  b_usedbooks.setBackgroundResource(R.drawable.coveringlayout_selection);
                                     }
                                 }
                                 else
@@ -748,7 +826,7 @@ public class ProductDetails extends AppCompatActivity {
                                     if(paperback.equals("false") && usedbook_available.equals("false"))
                                     {
                                         ProductParams.put("is_used_book", "false");
-                                        b_hardcover.setBackgroundResource(R.drawable.coveringlayout_selection);
+                                       // b_hardcover.setBackgroundResource(R.drawable.coveringlayout_selection);
                                     }
                                 }
                                 else
@@ -1048,5 +1126,8 @@ public class ProductDetails extends AppCompatActivity {
 
         return true;
     }
+
+
+
 
 }

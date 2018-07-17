@@ -32,6 +32,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -206,11 +207,19 @@ public class OrderList extends AppCompatActivity {
 
     private void Call_OrderList() {
 
+
+        final SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Loading");
+        pDialog.setCancelable(true);
+        pDialog.show();
+
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 "https://dcbookstore.tk/api/order/order_listing", new JSONObject(OrderParams),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        pDialog.dismissWithAnimation();
                         System.out.println("cccccccc "+response.toString());
 
 
@@ -276,7 +285,7 @@ public class OrderList extends AppCompatActivity {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-               // pDialog.dismiss();
+                pDialog.dismiss();
             }
         });
 
@@ -289,7 +298,7 @@ public class OrderList extends AppCompatActivity {
 
     public class ItemData {
 
-        String id,productname,orderstatusname,orderstatus,date,image,orderid;
+        String id,productname,orderstatusname,orderstatus,date,image,ordernumber;
         public ItemData(String ID,String ProductName,String Orderstatusname,String Orderstatus,String Date,String Image,String Ordernumber){
 
             this.id = ID;
@@ -298,7 +307,7 @@ public class OrderList extends AppCompatActivity {
             this.orderstatus=Orderstatus;
             this.date = Date;
             this.image = Image;
-            this.orderid=Ordernumber;
+            this.ordernumber=Ordernumber;
         }
         public String getid()
         {
@@ -324,10 +333,12 @@ public class OrderList extends AppCompatActivity {
         {
             return this.orderstatus;
         }
-        public String getorderid()
+        public String getordernumber()
         {
-            return this.orderid;
+            return this.ordernumber;
         }
+
+
 
     }
 
@@ -359,7 +370,7 @@ public class OrderList extends AppCompatActivity {
 
 
             viewHolder.productname.setTypeface(font2);
-            viewHolder.orderstatus.setTypeface(font);
+            viewHolder.orderno.setTypeface(font);
             viewHolder.date.setTypeface(font);
 
            String aa=orderlist.get(position).getorderstatusname();
@@ -367,20 +378,27 @@ public class OrderList extends AppCompatActivity {
 
             if(orderlist.get(position).getorderstatus().equals("4"))
             {
-                viewHolder.orderstatus.setTextColor(Color.parseColor("#008000"));
+                viewHolder.orderno.setTextColor(Color.parseColor("#008000"));
                 //viewHolder.date.setTextColor(Color.parseColor("#008000"));
             }
             else if(orderlist.get(position).getorderstatus().equals("1"))
             {
-                viewHolder.orderstatus.setTextColor(Color.parseColor("#008000"));
+                viewHolder.orderno.setTextColor(Color.parseColor("#008000"));
                // viewHolder.date.setTextColor(Color.parseColor("#ff0000"));
             }
 
             viewHolder.productname.setText(orderlist.get(position).getproductname());
-            viewHolder.orderstatus.setText(orderlist.get(position).getorderstatusname());
-            viewHolder.date.setText(orderlist.get(position).getdate());
+            viewHolder.orderno.setText("Order no: "+orderlist.get(position).getordernumber());
+            viewHolder.date.setText("Order on: "+orderlist.get(position).getdate());
+
+
+
+
             Glide.with(OrderList.this)
-                    .load(orderlist.get(position).getimage()).into(viewHolder.product_img);
+                    .load(orderlist.get(position).getimage()).apply(new RequestOptions().override(300, 300)).into(viewHolder.product_img);
+
+
+
 
 
 
@@ -390,7 +408,7 @@ public class OrderList extends AppCompatActivity {
         // inner class to hold a reference to each item of RecyclerView
         public class ViewHolder extends RecyclerView.ViewHolder {
 
-            public TextView productname,orderstatus,date;
+            public TextView productname,orderno,date;
             public ImageView product_img;
             public Button ViewOrder;
 
@@ -400,17 +418,27 @@ public class OrderList extends AppCompatActivity {
                 super(itemLayoutView);
 
                 productname =itemLayoutView.findViewById(R.id.textView37);
-                orderstatus=itemLayoutView.findViewById(R.id.textView39);
+                orderno=itemLayoutView.findViewById(R.id.textView39);
                 date=itemLayoutView.findViewById(R.id.textView40);
                 product_img=itemLayoutView.findViewById(R.id.imageView15);
                 ViewOrder=itemLayoutView.findViewById(R.id.button8);
+
+                ViewOrder.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        Intent in=new Intent(OrderList.this,OrderlistDetails.class);
+                        in.putExtra("Ordernumber",orderlist.get(getAdapterPosition()).getordernumber());
+                        startActivity(in);
+                    }
+                });
 
                 itemLayoutView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
                         Intent in=new Intent(OrderList.this,OrderlistDetails.class);
-                        in.putExtra("Ordernumber",orderlist.get(getAdapterPosition()).getorderid());
+                        in.putExtra("Ordernumber",orderlist.get(getAdapterPosition()).getordernumber());
                         startActivity(in);
                     }
                 });
